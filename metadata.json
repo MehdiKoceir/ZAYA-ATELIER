@@ -1,6 +1,6 @@
 {
   "name": "ZAYA Atelier | Algerian Fashion Boutique",
-  "description": "Premium Algerian fashion boutique featuring curated collections, real variant inventory management, 58 Wilayas Cash-on-Delivery checkout, order tracking, and boutique owner management dashboard.",
+  "description": "ZAYA luxury contemporary fashion platform featuring public editorial homepage, authentication flow, and private customer shopping dashboard with 58 Wilayas Cash-on-Delivery.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

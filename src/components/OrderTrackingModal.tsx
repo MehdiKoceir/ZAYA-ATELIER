@@ -249,9 +249,33 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ isOpen, 
                   </div>
                 ))}
 
-                <div className="flex justify-between text-sm font-bold text-[#1A1918] pt-2">
-                  <span>Montant COD à régler :</span>
-                  <span>{formatDA(order.total, language)}</span>
+                <div className="pt-2 border-t border-stone-200 space-y-1">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-stone-500">Mode de paiement :</span>
+                    <span className="font-semibold text-stone-900">
+                      {order.paymentMethod === 'edahabia' ? 'Carte Edahabia (Payé en ligne)' :
+                       order.paymentMethod === 'cib' ? 'Carte Bancaire CIB (Payé en ligne)' :
+                       order.paymentMethod === 'baridimob' ? 'BaridiMob / CCP' :
+                       order.paymentMethod === 'bank_transfer' ? 'Virement Bancaire' :
+                       'Espèces à la livraison (COD)'}
+                    </span>
+                  </div>
+                  {order.cardDetails && (
+                    <div className="flex justify-between text-[11px] font-mono text-stone-600 bg-stone-50 p-1.5 rounded">
+                      <span>Carte : {order.cardDetails.maskedNumber}</span>
+                      <span className="text-emerald-700 font-sans font-medium">Authentifié SATIM</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between text-sm font-bold text-[#1A1918] pt-1">
+                    <span>
+                      {order.paymentMethod === 'edahabia' || order.paymentMethod === 'cib'
+                        ? 'Montant réglé en ligne :'
+                        : 'Montant à régler au livreur :'}
+                    </span>
+                    <span className={order.paymentMethod === 'edahabia' || order.paymentMethod === 'cib' ? 'text-emerald-800' : ''}>
+                      {formatDA(order.total, language)}
+                    </span>
+                  </div>
                 </div>
               </div>
 

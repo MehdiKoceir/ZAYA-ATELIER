@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import {
   Package, ShoppingCart, Users, TrendingUp, AlertTriangle, Search, Filter, Plus,
   Edit2, Trash2, CheckCircle2, Truck, RefreshCw, MessageCircle, Phone, ArrowUpRight,
-  Sparkles, Tag, ChevronDown, Clock, ShieldCheck, Check, X, AlertCircle
+  Sparkles, Tag, ChevronDown, Clock, ShieldCheck, Check, X, AlertCircle, Save
 } from 'lucide-react';
 import { Product, Order, OrderStatus, CustomerCRM, DiscountCode, StockMovement, Language, ProductVariant } from '../types';
 import { formatDA, buildWhatsAppLink, BOUTIQUE_PHONE } from '../lib/i18n';
 import { ALGERIAN_WILAYAS } from '../data/wilayas';
+import { useAuth } from '../context/AuthContext';
 
 interface AdminDashboardProps {
   language: Language;
@@ -15,6 +16,7 @@ interface AdminDashboardProps {
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ language, onExitAdmin, onProductUpdated }) => {
+  const { user, token } = useAuth();
   const [activeTab, setActiveTab] = useState<'orders' | 'inventory' | 'products' | 'customers' | 'discounts' | 'analytics'>('orders');
 
   // State
@@ -31,6 +33,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ language, onExit
 
   // Selected Order for drawer/modal
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+
+  // Edit Product Modal State
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [editProdName, setEditProdName] = useState('');
+  const [editProdNameAr, setEditProdNameAr] = useState('');
+  const [editProdPrice, setEditProdPrice] = useState<number>(0);
+  const [editProdSalePrice, setEditProdSalePrice] = useState<number | undefined>(undefined);
+  const [editProdCategory, setEditProdCategory] = useState('');
+  const [editProdCategoryFr, setEditProdCategoryFr] = useState('');
+  const [editProdMaterial, setEditProdMaterial] = useState('');
+  const [editProdDescFr, setEditProdDescFr] = useState('');
+  const [editProdVariants, setEditProdVariants] = useState<ProductVariant[]>([]);
 
   // New Product Modal State
   const [showAddProduct, setShowAddProduct] = useState(false);
@@ -60,17 +74,24 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ language, onExit
   const [newDiscValue, setNewDiscValue] = useState<number>(10);
   const [newDiscMinOrder, setNewDiscMinOrder] = useState<number>(5000);
 
+  // Helper for authenticated headers
+  const getAuthHeaders = () => ({
+    'Content-Type': 'application/json',
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+  });
+
   // Fetch all dashboard data
   const fetchData = async () => {
     setLoading(true);
+    const headers = token ? { 'Authorization': `Bearer ${token}` } : undefined;
     try {
       const [ordRes, prodRes, custRes, discRes, movRes, analRes] = await Promise.all([
-        fetch('/api/orders').then(r => r.json()),
-        fetch('/api/products').then(r => r.json()),
-        fetch('/api/customers').then(r => r.json()),
-        fetch('/api/discounts').then(r => r.json()),
-        fetch('/api/inventory/movements').then(r => r.json()),
-        fetch('/api/analytics').then(r => r.json())
+        fetch('/api/orders', { headers }).then(r => r.json()),
+        fetch('/api/products', { headers }).then(r => r.json()),
+        fetch('/api/customers', { headers }).then(r => r.json()),
+        fetch('/api/discounts', { headers }).then(r => r.json()),
+        fetch('/api/inventory/movements', { headers }).then(r => r.json()),
+        fetch('/api/analytics', { headers }).then(r => r.json())
       ]);
 
       if (ordRes.success) setOrders(ordRes.orders);
@@ -88,14 +109,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ language, onExit
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [token]);
 
   // Update order status
   const handleUpdateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
     try {
       const res = await fetch(`/api/orders/${orderId}/status`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify({ status: newStatus })
       });
       const data = await res.json();
@@ -115,7 +136,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ language, onExit
     try {
       const res = await fetch('/api/inventory/adjust', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify({
           productId,
           variantId,
@@ -160,6 +181,59 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ language, onExit
     }
   };
 
+  // Start editing existing product
+  const handleStartEditProduct = (p: Product) => {
+    setEditingProduct(p);
+    setEditProdName(p.name);
+    setEditProdNameAr(p.nameAr || p.name);
+    setEditProdPrice(p.price);
+    setEditProdSalePrice(p.salePrice);
+    setEditProdCategory(p.category);
+    setEditProdCategoryFr(p.categoryFr || 'Prêt-à-porter');
+    setEditProdMaterial(p.material);
+    setEditProdDescFr(p.description);
+    setEditProdVariants(p.variants.map(v => ({ ...v })));
+  };
+
+  // Save product edits (PUT /api/products/:id)
+  const handleSaveEditProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingProduct) return;
+
+    try {
+      const payload = {
+        name: editProdName.trim(),
+        nameAr: editProdNameAr.trim(),
+        price: Number(editProdPrice),
+        salePrice: editProdSalePrice ? Number(editProdSalePrice) : undefined,
+        category: editProdCategory,
+        categoryFr: editProdCategoryFr,
+        material: editProdMaterial.trim(),
+        description: editProdDescFr.trim(),
+        variants: editProdVariants.map(v => ({
+          ...v,
+          stock: Math.max(0, Number(v.stock) || 0)
+        }))
+      };
+
+      const res = await fetch(`/api/products/${editingProduct.id}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        setEditingProduct(null);
+        fetchData();
+        onProductUpdated();
+      } else {
+        alert(data.error || 'Erreur lors de la mise à jour');
+      }
+    } catch (err) {
+      console.error('Error updating product:', err);
+    }
+  };
+
   // Submit new product
   const handleCreateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -190,7 +264,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ language, onExit
 
       const res = await fetch('/api/products', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify(payload)
       });
       const data = await res.json();
@@ -198,6 +272,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ language, onExit
         setShowAddProduct(false);
         fetchData();
         onProductUpdated();
+      } else {
+        alert(data.error || 'Erreur lors de la création');
       }
     } catch (err) {
       console.error(err);
@@ -212,7 +288,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ language, onExit
     try {
       const res = await fetch('/api/discounts', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify({
           code: newDiscCode,
           type: newDiscType,
@@ -224,6 +300,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ language, onExit
       if (data.success) {
         setNewDiscCode('');
         fetchData();
+      } else {
+        alert(data.error || 'Erreur code promo');
       }
     } catch (err) {
       console.error(err);
@@ -234,9 +312,34 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ language, onExit
   const handleDeleteProduct = async (id: string) => {
     if (!confirm('Confirmez-vous la suppression de ce produit ?')) return;
     try {
-      await fetch(`/api/products/${id}`, { method: 'DELETE' });
-      fetchData();
-      onProductUpdated();
+      const res = await fetch(`/api/products/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
+      const data = await res.json();
+      if (data.success) {
+        fetchData();
+        onProductUpdated();
+      } else {
+        alert(data.error || 'Erreur lors de la suppression');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Delete discount
+  const handleDeleteDiscount = async (id: string) => {
+    if (!confirm('Confirmez-vous la suppression de ce code promo ?')) return;
+    try {
+      const res = await fetch(`/api/discounts/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
+      const data = await res.json();
+      if (data.success) {
+        fetchData();
+      }
     } catch (err) {
       console.error(err);
     }
@@ -253,6 +356,37 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ language, onExit
       o.wilayaName.toLowerCase().includes(q);
     return matchStatus && matchQuery;
   });
+
+  // Security Guard: Restrict access to authenticated Admin
+  if (!user || user.role !== 'admin') {
+    return (
+      <div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center p-6 text-center">
+        <div className="max-w-md w-full bg-white border border-[#EAE4DC] p-8 shadow-xs rounded-xs space-y-4">
+          <div className="w-12 h-12 bg-amber-50 text-[#C5A880] rounded-full flex items-center justify-center mx-auto border border-amber-200">
+            <ShieldCheck className="w-6 h-6" />
+          </div>
+          <h2 className="font-serif-luxury font-bold text-xl text-[#1A1918]">
+            Accès Direction Atelier ZAYA
+          </h2>
+          <p className="text-xs text-[#655D52] leading-relaxed">
+            Ce panneau d'administration (inventaire, commandes 58 Wilayas, gestion du catalogue) requiert un compte administrateur authentifié.
+          </p>
+          <div className="p-3 bg-stone-50 border border-stone-200 text-left text-xs space-y-1 font-mono">
+            <p className="text-stone-500 text-[11px] font-sans">Compte Administrateur Officiel :</p>
+            <p className="text-stone-800 font-semibold">admin@zaya.dz</p>
+          </div>
+          <div className="pt-2">
+            <button
+              onClick={onExitAdmin}
+              className="w-full py-2.5 bg-[#1A1918] hover:bg-black text-[#FAF8F5] text-xs font-semibold uppercase tracking-wider transition-all shadow-xs"
+            >
+              Retourner à la Boutique
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F4EFEA] text-[#1A1918] text-left">
@@ -518,7 +652,37 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ language, onExit
                             <span className="font-bold font-mono text-stone-900">
                               {formatDA(ord.total)}
                             </span>
-                            <div className="text-[10px] text-stone-500">Espèces au livreur</div>
+                            <div className="text-[10px]">
+                              {ord.paymentMethod === 'edahabia' ? (
+                                <span className="text-emerald-800 font-semibold bg-emerald-50 border border-emerald-200 px-1 py-0.5 rounded">
+                                  Carte Edahabia
+                                </span>
+                              ) : ord.paymentMethod === 'cib' ? (
+                                <span className="text-blue-800 font-semibold bg-blue-50 border border-blue-200 px-1 py-0.5 rounded">
+                                  Carte Bancaire CIB
+                                </span>
+                              ) : ord.paymentMethod === 'baridimob' ? (
+                                <span className="text-amber-800 font-semibold bg-amber-50 px-1 py-0.5 rounded">
+                                  BaridiMob / CCP
+                                </span>
+                              ) : ord.paymentMethod === 'bank_transfer' ? (
+                                <span className="text-blue-800 font-semibold bg-blue-50 px-1 py-0.5 rounded">
+                                  Carte CIB / RIB
+                                </span>
+                              ) : (
+                                <span className="text-stone-500">Espèces au livreur</span>
+                              )}
+                              {ord.cardDetails && (
+                                <div className="text-[9px] text-stone-600 font-mono mt-0.5">
+                                  {ord.cardDetails.maskedNumber}
+                                </div>
+                              )}
+                              {ord.paymentReference && (
+                                <div className="text-[9px] text-stone-400 font-mono mt-0.5 truncate max-w-[120px]">
+                                  Réf: {ord.paymentReference}
+                                </div>
+                              )}
+                            </div>
                           </td>
 
                           <td className="py-3 px-4">
@@ -760,13 +924,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ language, onExit
 
                   <div className="pt-4 border-t border-stone-100 flex items-center justify-between text-xs mt-3">
                     <span className="text-stone-500 font-mono text-[11px]">{p.variants.length} variantes</span>
-                    <button
-                      onClick={() => handleDeleteProduct(p.id)}
-                      className="text-stone-400 hover:text-red-600 p-1 transition-colors"
-                      title="Supprimer"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleStartEditProduct(p)}
+                        className="text-stone-700 hover:text-stone-950 flex items-center gap-1 text-[11px] font-medium px-2 py-1 bg-stone-100 hover:bg-stone-200 transition-colors"
+                        title="Modifier cette pièce"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                        <span>Modifier</span>
+                      </button>
+                      <button
+                        onClick={() => handleDeleteProduct(p.id)}
+                        className="text-stone-400 hover:text-red-600 p-1 transition-colors"
+                        title="Supprimer"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -1028,9 +1202,32 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ language, onExit
                   <span className="font-mono font-bold">{formatDA(it.total)}</span>
                 </div>
               ))}
-              <div className="flex justify-between pt-1 font-bold text-sm text-stone-900">
-                <span>Total à encaisser au livreur (COD) :</span>
-                <span>{formatDA(selectedOrder.total)}</span>
+              <div className="pt-2 border-t border-stone-200 space-y-1">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-stone-600">Mode de règlement :</span>
+                  <span className="font-semibold text-stone-900">
+                    {selectedOrder.paymentMethod === 'edahabia' ? 'Carte Edahabia (Débit Validé)' :
+                     selectedOrder.paymentMethod === 'cib' ? 'Carte Bancaire CIB (Débit Validé)' :
+                     selectedOrder.paymentMethod === 'baridimob' ? 'BaridiMob / CCP' :
+                     selectedOrder.paymentMethod === 'bank_transfer' ? 'Virement / CIB' :
+                     'Espèces à la livraison (COD)'}
+                  </span>
+                </div>
+                {selectedOrder.cardDetails && (
+                  <div className="p-2 bg-stone-50 border border-stone-200 rounded-xs font-mono text-[11px] space-y-0.5">
+                    <div>Carte: <strong>{selectedOrder.cardDetails.maskedNumber}</strong> ({selectedOrder.cardDetails.cardType.toUpperCase()})</div>
+                    <div>Porteur: <strong>{selectedOrder.cardDetails.cardHolder}</strong> | Expiration: {selectedOrder.cardDetails.expiryDate}</div>
+                    {selectedOrder.paymentReference && <div className="text-emerald-700">Autorisation: {selectedOrder.paymentReference}</div>}
+                  </div>
+                )}
+                <div className="flex justify-between pt-1 font-bold text-sm text-stone-900">
+                  <span>
+                    {selectedOrder.paymentMethod === 'edahabia' || selectedOrder.paymentMethod === 'cib'
+                      ? 'Total Réglé en Ligne :'
+                      : 'Total à encaisser au livreur :'}
+                  </span>
+                  <span className="text-emerald-800">{formatDA(selectedOrder.total)}</span>
+                </div>
               </div>
             </div>
 
@@ -1230,6 +1427,167 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ language, onExit
                   type="button"
                   onClick={() => setShowAddProduct(false)}
                   className="px-4 py-3 bg-stone-200 text-stone-800 uppercase font-semibold"
+                >
+                  Annuler
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* EDIT PRODUCT MODAL */}
+      {editingProduct && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="bg-[#FAF8F5] border border-stone-300 w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-stone-200">
+              <div>
+                <h3 className="font-serif-luxury font-bold text-lg text-stone-900">
+                  Modifier la Pièce • Atelier ZAYA
+                </h3>
+                <p className="text-xs text-stone-500">
+                  ID: {editingProduct.id} • Modifiez les informations, le prix et les stocks des variantes.
+                </p>
+              </div>
+              <button
+                onClick={() => setEditingProduct(null)}
+                className="p-1.5 text-stone-400 hover:text-stone-900 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEditProduct} className="mt-4 space-y-4 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold mb-1 text-stone-800">Nom du Modèle (Français)</label>
+                  <input
+                    type="text"
+                    required
+                    value={editProdName}
+                    onChange={(e) => setEditProdName(e.target.value)}
+                    className="w-full px-3 py-2 border border-stone-300 bg-white"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold mb-1 text-stone-800">Nom du Modèle (العربية)</label>
+                  <input
+                    type="text"
+                    value={editProdNameAr}
+                    onChange={(e) => setEditProdNameAr(e.target.value)}
+                    className="w-full px-3 py-2 border border-stone-300 bg-white text-right font-arabic"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div>
+                  <label className="block font-semibold mb-1 text-stone-800">Prix Normal (DA)</label>
+                  <input
+                    type="number"
+                    required
+                    value={editProdPrice}
+                    onChange={(e) => setEditProdPrice(Number(e.target.value))}
+                    className="w-full px-3 py-2 border border-stone-300 bg-white font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold mb-1 text-stone-800">Prix Promo (Optionnel)</label>
+                  <input
+                    type="number"
+                    value={editProdSalePrice || ''}
+                    onChange={(e) => setEditProdSalePrice(e.target.value ? Number(e.target.value) : undefined)}
+                    placeholder="Aucune promo"
+                    className="w-full px-3 py-2 border border-stone-300 bg-white font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold mb-1 text-stone-800">Catégorie</label>
+                  <select
+                    value={editProdCategory}
+                    onChange={(e) => {
+                      setEditProdCategory(e.target.value);
+                      const map: Record<string, string> = {
+                        caftans: 'Caftans & Robes',
+                        chemises: 'Chemises & Tuniques',
+                        vestes: 'Vestes & Blazers',
+                        pantalons: 'Pantalons & Ensembles',
+                        accessoires: 'Maroquinerie & Accessoires'
+                      };
+                      setEditProdCategoryFr(map[e.target.value] || e.target.value);
+                    }}
+                    className="w-full px-3 py-2 border border-stone-300 bg-white"
+                  >
+                    <option value="caftans">Caftans & Robes</option>
+                    <option value="chemises">Chemises & Tuniques</option>
+                    <option value="vestes">Vestes & Blazers</option>
+                    <option value="pantalons">Pantalons & Ensembles</option>
+                    <option value="accessoires">Maroquinerie & Accessoires</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-semibold mb-1 text-stone-800">Matière & Tissu</label>
+                  <input
+                    type="text"
+                    value={editProdMaterial}
+                    onChange={(e) => setEditProdMaterial(e.target.value)}
+                    className="w-full px-3 py-2 border border-stone-300 bg-white"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-semibold mb-1 text-stone-800">Description Détaillée</label>
+                <textarea
+                  rows={3}
+                  value={editProdDescFr}
+                  onChange={(e) => setEditProdDescFr(e.target.value)}
+                  className="w-full p-2 border border-stone-300 bg-white text-xs leading-relaxed"
+                />
+              </div>
+
+              {/* Variants & Stock Editor */}
+              <div className="space-y-2 border-t border-stone-200 pt-3">
+                <label className="block font-semibold text-stone-900 uppercase tracking-wider text-[11px]">
+                  Stocks des Variantes (Couleurs & Tailles)
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-1">
+                  {editProdVariants.map((v, i) => (
+                    <div key={v.id || i} className="p-2.5 bg-white border border-stone-200 flex items-center justify-between gap-2 shadow-2xs">
+                      <div>
+                        <div className="font-semibold text-stone-900">{v.color}</div>
+                        <div className="text-stone-500 font-mono text-[11px]">Taille: {v.size}</div>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <label className="text-[10px] text-stone-400">Stock:</label>
+                        <input
+                          type="number"
+                          min={0}
+                          value={v.stock}
+                          onChange={(e) => {
+                            const newStock = Math.max(0, parseInt(e.target.value) || 0);
+                            setEditProdVariants(prev => prev.map((item, idx) => idx === i ? { ...item, stock: newStock } : item));
+                          }}
+                          className="w-14 px-1.5 py-1 border border-stone-300 bg-stone-50 text-center font-mono font-bold text-xs"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-3 flex gap-2 border-t border-stone-200">
+                <button
+                  type="submit"
+                  className="flex-1 py-3 bg-[#1A1918] hover:bg-black text-[#FAF8F5] uppercase font-bold tracking-wider flex items-center justify-center gap-1.5"
+                >
+                  <Save className="w-4 h-4 text-[#C5A880]" />
+                  <span>Enregistrer les Modifications</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditingProduct(null)}
+                  className="px-5 py-3 bg-stone-200 hover:bg-stone-300 text-stone-800 uppercase font-semibold"
                 >
                   Annuler
                 </button>

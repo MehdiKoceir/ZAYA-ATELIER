@@ -108,7 +108,14 @@ export interface Order {
   total: number;
   discountCode?: string;
   status: OrderStatus;
-  paymentMethod: 'COD'; // Cash on Delivery (Paiement à la livraison)
+  paymentMethod: 'COD' | 'baridimob' | 'bank_transfer' | 'edahabia' | 'cib';
+  cardDetails?: {
+    maskedNumber: string;
+    cardHolder: string;
+    cardType: 'edahabia' | 'cib';
+    expiryDate: string;
+  };
+  paymentReference?: string;
   customerNotes?: string;
   internalNotes?: string;
   items: OrderItem[];
@@ -175,6 +182,7 @@ export interface UserAccount {
   commune: string;
   address: string;
   deliveryMethod?: 'home' | 'desk';
+  deliveryNotes?: string;
   role?: 'customer' | 'admin';
   loyaltyTier?: 'Membre' | 'Privilège' | 'VIP Atelier';
   ordersCount?: number;
@@ -197,6 +205,7 @@ export interface RegisterData {
   phone: string;
   password: string;
   wilayaCode: number;
+  wilayaName?: string;
   commune: string;
   address: string;
   deliveryMethod?: 'home' | 'desk';

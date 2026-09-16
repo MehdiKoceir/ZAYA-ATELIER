@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { X, Heart, MessageCircle, ShoppingBag, Truck, ShieldCheck, Check, Share2, AlertCircle } from 'lucide-react';
+import { X, Heart, MessageCircle, ShoppingBag, Truck, ShieldCheck, Check, Share2, AlertCircle, Lock } from 'lucide-react';
 import { Product, ProductVariant, Language } from '../types';
 import { formatDA, translations, buildWhatsAppLink, BOUTIQUE_PHONE } from '../lib/i18n';
+import { useAuth } from '../context/AuthContext';
 
 interface ProductModalProps {
   product: Product | null;
@@ -22,6 +23,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   onToggleWishlist,
   onDirectCheckout
 }) => {
+  const { user } = useAuth();
   const t = translations[language];
   const [selectedColor, setSelectedColor] = useState<string>(product?.colors[0]?.name || '');
   const [selectedSize, setSelectedSize] = useState<string>(product?.sizes[0] || '');
@@ -290,6 +292,13 @@ export const ProductModal: React.FC<ProductModalProps> = ({
 
             {/* Action Buttons */}
             <div className="space-y-2.5 pt-6 border-t border-[#E8E1D5]">
+              {!user && (
+                <div className="flex items-center gap-2 p-2.5 bg-[#F4EFEA] border border-[#DDD5CA] text-xs text-[#6B6356] rounded-lg">
+                  <Lock className="w-3.5 h-3.5 text-[#C5A880] shrink-0" />
+                  <span>Connexion ou inscription requise pour commander ou ajouter au panier.</span>
+                </div>
+              )}
+
               <div className="flex items-center gap-2">
                 {/* Add to Cart */}
                 <button

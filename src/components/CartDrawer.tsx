@@ -1,46 +1,59 @@
-import React, { useState } from 'react';
-import { X, Trash2, ShoppingBag, ArrowRight, Tag, ShieldCheck, Truck } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { X, Trash2, ShoppingBag, ArrowRight, Tag, ShieldCheck, Truck, Lock } from 'lucide-react';
 import { CartItem, Language } from '../types';
 import { formatDA, translations } from '../lib/i18n';
+import { useAuth } from '../context/AuthContext';
 
 interface CartDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  items: CartItem[];
-  onUpdateQty: (variantId: string, quantity: number) => void;
+  items?: CartItem[];
+  cart?: CartItem[];
+  onUpdateQty?: (variantId: string, quantity: number) => void;
+  onUpdateQuantity?: (variantId: string, quantity: number) => void;
   onRemoveItem: (variantId: string) => void;
-  onCheckout: () => void;
+  onCheckout?: () => void;
+  onProceedToCheckout?: () => void;
   language: Language;
   discountCode?: string;
-  discountAmount: number;
-  onApplyDiscount: (code: string) => Promise<boolean>;
+  discountAmount?: number;
+  onApplyDiscount?: (code: string) => Promise<boolean>;
 }
 
 export const CartDrawer: React.FC<CartDrawerProps> = ({
   isOpen,
   onClose,
   items,
+  cart,
   onUpdateQty,
+  onUpdateQuantity,
   onRemoveItem,
   onCheckout,
+  onProceedToCheckout,
   language,
   discountCode,
-  discountAmount,
+  discountAmount = 0,
   onApplyDiscount
 }) => {
+  const { user } = useAuth();
   const [promoInput, setPromoInput] = useState('');
   const [promoLoading, setPromoLoading] = useState(false);
   const [promoError, setPromoError] = useState<string | null>(null);
   const t = translations[language];
 
+  const cartItems = items || cart || [];
+  const handleUpdate = onUpdateQty || onUpdateQuantity || (() => {});
+  const handleCheckout = onCheckout || onProceedToCheckout || (() => {});
+
   if (!isOpen) return null;
 
-  const subtotal = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
-  const total = Math.max(0, subtotal - discountAmount);
+  const subtotal = (cartItems || []).reduce((sum, item) => sum + (item.unitPrice || 0) * (item.quantity || 1), 0);
+  const total = Math.max(0, subtotal - (discountAmount || 0));
 
   const handleApplyPromo = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!promoInput.trim()) return;
+    if (!promoInput.trim() || !onApplyDiscount) return;
 
     setPromoLoading(true);
     setPromoError(null);
@@ -69,7 +82,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
           <div className="flex items-center gap-2">
             <ShoppingBag className="w-5 h-5 text-[#1A1918]" />
             <h2 className="font-serif-luxury text-lg font-bold text-[#1A1918]">
-              {t.cartTitle} ({items.reduce((s, i) => s + i.quantity, 0)})
+              {t.cartTitle} ({(cartItems || []).reduce((s, i) => s + (i.quantity || 0), 0)})
             </h2>
           </div>
 
@@ -83,7 +96,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
         {/* Cart Items List */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
-          {items.length === 0 ? (
+          {cartItems.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-3">
               <div className="w-16 h-16 rounded-full bg-[#EFE9DF] flex items-center justify-center text-stone-400">
                 <ShoppingBag className="w-8 h-8" />
@@ -100,7 +113,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               </button>
             </div>
           ) : (
-            items.map((item) => (
+            cartItems.map((item) => (
               <div
                 key={item.variantId}
                 className="flex gap-3.5 pb-4 border-b border-[#EFE9DF] text-left"
@@ -146,14 +159,14 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   <div className="flex items-center justify-between mt-2">
                     <div className="flex items-center border border-stone-300 bg-white">
                       <button
-                        onClick={() => onUpdateQty(item.variantId, item.quantity - 1)}
+                        onClick={() => handleUpdate(item.variantId, item.quantity - 1)}
                         className="px-2 py-0.5 text-xs text-stone-600 hover:bg-stone-100"
                       >
                         -
                       </button>
                       <span className="px-2.5 py-0.5 text-xs font-mono font-medium">{item.quantity}</span>
                       <button
-                        onClick={() => onUpdateQty(item.variantId, item.quantity + 1)}
+                        onClick={() => handleUpdate(item.variantId, item.quantity + 1)}
                         className="px-2 py-0.5 text-xs text-stone-600 hover:bg-stone-100"
                       >
                         +
@@ -171,7 +184,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
         </div>
 
         {/* Footer & Checkout */}
-        {items.length > 0 && (
+        {cartItems.length > 0 && (
           <div className="p-4 sm:p-5 bg-[#F3EFE9] border-t border-[#EAE3D6] space-y-3">
             {/* Promo Code Input */}
             <form onSubmit={handleApplyPromo} className="space-y-1">
@@ -232,17 +245,33 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
             {/* Reassurance */}
             <div className="flex items-center gap-1.5 text-[11px] text-stone-600 bg-white/60 p-2 border border-stone-200">
               <Truck className="w-3.5 h-3.5 text-[#C5A880] shrink-0" />
-              <span>Paiement en espèces à la livraison (58 Wilayas)</span>
+              <span>Paiement au choix : Espèces (COD), BaridiMob / CCP ou Carte CIB</span>
             </div>
+
+            {!user && (
+              <div className="flex items-center gap-2 p-2 bg-[#F4EFEA] border border-[#DDD5CA] text-[11px] text-[#6B6356]">
+                <Lock className="w-3.5 h-3.5 text-[#C5A880] shrink-0" />
+                <span>Connexion ou inscription requise pour commander</span>
+              </div>
+            )}
 
             {/* Checkout Button */}
             <button
               id="cart-proceed-checkout-btn"
-              onClick={onCheckout}
+              onClick={handleCheckout}
               className="w-full py-3 px-4 bg-[#1A1918] hover:bg-black text-[#FAF8F5] text-xs uppercase tracking-wider font-bold transition-all flex items-center justify-center gap-2 shadow-md hover:translate-y-[-1px]"
             >
-              <span>{t.proceedToCheckout}</span>
-              <ArrowRight className="w-4 h-4 text-[#C5A880]" />
+              {user ? (
+                <>
+                  <span>{t.proceedToCheckout}</span>
+                  <ArrowRight className="w-4 h-4 text-[#C5A880]" />
+                </>
+              ) : (
+                <>
+                  <Lock className="w-4 h-4 text-[#C5A880]" />
+                  <span>Se connecter pour commander</span>
+                </>
+              )}
             </button>
           </div>
         )}

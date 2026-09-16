@@ -30,6 +30,21 @@ interface UserRecord extends UserAccount {
 
 let users: UserRecord[] = [
   {
+    id: 'user-admin',
+    name: 'Direction ZAYA Atelier',
+    email: 'admin@zaya.dz',
+    phone: '0550000000',
+    wilayaCode: 16,
+    wilayaName: 'Alger',
+    commune: 'Hydra',
+    address: 'Boulevard du 11 Décembre, Val d\'Hydra, Alger',
+    deliveryMethod: 'home',
+    role: 'admin',
+    loyaltyTier: 'VIP Atelier',
+    createdAt: '2026-01-01T00:00:00Z',
+    passwordHash: hashPassword('AdminZaya2026!')
+  },
+  {
     id: 'user-001',
     name: 'Sarah Benali',
     email: 'sarah@zaya.dz',
@@ -64,6 +79,51 @@ let users: UserRecord[] = [
 // Active sessions map (token -> userId)
 const activeSessions = new Map<string, string>();
 
+// Helper: Extract session user from request headers
+function getRequestUser(req: express.Request): UserRecord | null {
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.startsWith('Bearer ')
+    ? authHeader.substring(7).trim()
+    : ((req.query.token || req.headers['x-auth-token']) as string);
+
+  if (!token) return null;
+  const userId = activeSessions.get(token);
+  if (!userId) return null;
+  return users.find(u => u.id === userId) || null;
+}
+
+// Security Middleware: Require Valid Authentication
+function requireAuth(req: express.Request, res: express.Response, next: express.NextFunction) {
+  const user = getRequestUser(req);
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      error: 'Session non valide ou expirée. Veuillez vous connecter pour continuer.'
+    });
+  }
+  (req as any).user = user;
+  next();
+}
+
+// Security Middleware: Require Administrator Role (Atelier Management)
+function requireAdmin(req: express.Request, res: express.Response, next: express.NextFunction) {
+  const user = getRequestUser(req);
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      error: 'Connexion administrateur requise.'
+    });
+  }
+  if (user.role !== 'admin') {
+    return res.status(403).json({
+      success: false,
+      error: 'Accès interdit. Cette action nécessite les privilèges administrateur de l’Atelier ZAYA.'
+    });
+  }
+  (req as any).user = user;
+  next();
+}
+
 // Helper to sanitize user object (remove passwordHash and compute live order stats)
 function getSanitizedUser(user: UserRecord): UserAccount {
   const cleanPhone = user.phone.replace(/\s+/g, '');
@@ -85,6 +145,7 @@ function getSanitizedUser(user: UserRecord): UserAccount {
     commune: user.commune,
     address: user.address,
     deliveryMethod: user.deliveryMethod || 'home',
+    deliveryNotes: user.deliveryNotes || '',
     role: user.role || 'customer',
     loyaltyTier,
     ordersCount,
@@ -348,13 +409,23 @@ app.put('/api/auth/profile', (req, res) => {
       return res.status(404).json({ success: false, error: 'Utilisateur introuvable' });
     }
 
-    const { name, phone, wilayaCode, commune, address, deliveryMethod } = req.body;
+    const { name, phone, wilayaCode, commune, address, deliveryMethod, deliveryNotes } = req.body;
 
     if (name) user.name = String(name).trim();
-    if (phone) {
-      const cleanPhone = String(phone).replace(/\s+/g, '');
+    if (phone !== undefined) {
+      let cleanPhone = String(phone).replace(/[\s\-\.\(\)]/g, '');
+      if (cleanPhone.startsWith('+213')) {
+        cleanPhone = '0' + cleanPhone.slice(4);
+      } else if (cleanPhone.startsWith('00213')) {
+        cleanPhone = '0' + cleanPhone.slice(5);
+      }
       if (/^(0)(5|6|7)[0-9]{8}$/.test(cleanPhone)) {
         user.phone = cleanPhone;
+      } else if (cleanPhone.length > 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'Numéro de téléphone algérien invalide. Ex: 0550 12 34 56 ou 0661...'
+        });
       }
     }
     if (wilayaCode) {
@@ -367,6 +438,7 @@ app.put('/api/auth/profile', (req, res) => {
     if (commune !== undefined) user.commune = String(commune).trim();
     if (address !== undefined) user.address = String(address).trim();
     if (deliveryMethod) user.deliveryMethod = deliveryMethod === 'desk' ? 'desk' : 'home';
+    if (deliveryNotes !== undefined) user.deliveryNotes = String(deliveryNotes).trim();
 
     const sanitized = getSanitizedUser(user);
     res.json({ success: true, user: sanitized, message: 'Profil mis à jour avec succès' });
@@ -380,6 +452,12 @@ app.get('/api/auth/demo-accounts', (req, res) => {
   res.json({
     success: true,
     accounts: [
+      {
+        label: 'Direction Boutique (Admin Atelier)',
+        identifier: 'admin@zaya.dz',
+        password: 'AdminZaya2026!',
+        role: 'Admin'
+      },
       {
         label: 'Amélia Ziani (Cliente VIP Alger)',
         identifier: 'amelia@zaya.dz',
@@ -440,8 +518,8 @@ app.get('/api/products/:id', (req, res) => {
   res.json({ success: true, product });
 });
 
-// Admin add product
-app.post('/api/products', (req, res) => {
+// Admin add product (Protected)
+app.post('/api/products', requireAdmin, (req, res) => {
   try {
     const data = req.body;
     if (!data.name || !data.price || !Array.isArray(data.variants) || data.variants.length === 0) {
@@ -515,8 +593,8 @@ app.post('/api/products', (req, res) => {
   }
 });
 
-// Admin update product
-app.put('/api/products/:id', (req, res) => {
+// Admin update product (Protected)
+app.put('/api/products/:id', requireAdmin, (req, res) => {
   const idx = products.findIndex(p => p.id === req.params.id);
   if (idx === -1) {
     return res.status(404).json({ success: false, error: 'Product not found' });
@@ -561,8 +639,8 @@ app.put('/api/products/:id', (req, res) => {
   res.json({ success: true, product: existing });
 });
 
-// Admin delete product
-app.delete('/api/products/:id', (req, res) => {
+// Admin delete product (Protected)
+app.delete('/api/products/:id', requireAdmin, (req, res) => {
   const initialLen = products.length;
   products = products.filter(p => p.id !== req.params.id);
   if (products.length === initialLen) {
@@ -571,8 +649,8 @@ app.delete('/api/products/:id', (req, res) => {
   res.json({ success: true, message: 'Produit supprimé avec succès' });
 });
 
-// Adjust stock for variant (never negative, with audit log)
-app.patch('/api/inventory/adjust', (req, res) => {
+// Adjust stock for variant (never negative, with audit log - Protected)
+app.patch('/api/inventory/adjust', requireAdmin, (req, res) => {
   const { productId, variantId, change, reason = 'adjustment', note } = req.body;
   if (!productId || !variantId || typeof change !== 'number') {
     return res.status(400).json({ success: false, error: 'Données d’ajustement invalides' });
@@ -612,7 +690,7 @@ app.patch('/api/inventory/adjust', (req, res) => {
   res.json({ success: true, variant, totalProductStock: product.stock, movement });
 });
 
-app.get('/api/inventory/movements', (req, res) => {
+app.get('/api/inventory/movements', requireAdmin, (req, res) => {
   res.json({ success: true, movements: movements.slice(0, 50) });
 });
 
@@ -652,12 +730,12 @@ app.post('/api/discounts/validate', (req, res) => {
   });
 });
 
-// Admin Discounts
-app.get('/api/discounts', (req, res) => {
+// Admin Discounts (Protected)
+app.get('/api/discounts', requireAdmin, (req, res) => {
   res.json({ success: true, discounts });
 });
 
-app.post('/api/discounts', (req, res) => {
+app.post('/api/discounts', requireAdmin, (req, res) => {
   const { code, type, value, minOrder } = req.body;
   if (!code || !type || typeof value !== 'number') {
     return res.status(400).json({ success: false, error: 'Données promo invalides' });
@@ -677,7 +755,7 @@ app.post('/api/discounts', (req, res) => {
   res.status(201).json({ success: true, discount: newDisc });
 });
 
-app.delete('/api/discounts/:id', (req, res) => {
+app.delete('/api/discounts/:id', requireAdmin, (req, res) => {
   discounts = discounts.filter(d => d.id !== req.params.id);
   res.json({ success: true, message: 'Code promo supprimé' });
 });
@@ -691,6 +769,15 @@ app.get('/api/wilayas', (req, res) => {
 // CRITICAL: Strict server-side recalculation of prices, stock verification, and inventory deduction
 app.post('/api/orders', (req, res) => {
   try {
+    // Require authenticated session to place order
+    const sessionUser = getRequestUser(req);
+    if (!sessionUser) {
+      return res.status(401).json({
+        success: false,
+        error: 'Veuillez vous connecter ou créer votre compte pour commander avec paiement à la livraison.'
+      });
+    }
+
     const {
       customerName,
       phone,
@@ -701,7 +788,10 @@ app.post('/api/orders', (req, res) => {
       deliveryMethod = 'home',
       customerNotes,
       items,
-      discountCode
+      discountCode,
+      paymentMethod = 'COD',
+      paymentReference,
+      cardDetails
     } = req.body;
 
     // 1. Validation
@@ -837,7 +927,14 @@ app.post('/api/orders', (req, res) => {
       discountCode: appliedDiscountCode,
       total: finalTotal,
       status: 'pending',
-      paymentMethod: 'COD',
+      paymentMethod: (paymentMethod === 'edahabia' || paymentMethod === 'cib' || paymentMethod === 'baridimob' || paymentMethod === 'bank_transfer') ? paymentMethod : 'COD',
+      paymentReference: paymentReference ? String(paymentReference).trim() : undefined,
+      cardDetails: cardDetails ? {
+        maskedNumber: String(cardDetails.maskedNumber || ''),
+        cardHolder: String(cardDetails.cardHolder || ''),
+        cardType: cardDetails.cardType === 'cib' ? 'cib' : 'edahabia',
+        expiryDate: String(cardDetails.expiryDate || '')
+      } : undefined,
       customerNotes: customerNotes ? String(customerNotes).trim() : undefined,
       items: validatedItems,
       createdAt: new Date().toISOString(),
@@ -845,7 +942,15 @@ app.post('/api/orders', (req, res) => {
         {
           status: 'pending',
           timestamp: new Date().toISOString(),
-          note: 'Commande enregistrée (Paiement à la livraison)'
+          note: paymentMethod === 'edahabia'
+            ? `Paiement en ligne par Carte Edahabia (BaridiMob) validé via SATIM 3D-Secure (${cardDetails?.maskedNumber || 'Carte'})`
+            : paymentMethod === 'cib'
+            ? `Paiement en ligne par Carte Bancaire CIB validé via SATIM 3D-Secure (${cardDetails?.maskedNumber || 'Carte'})`
+            : paymentMethod === 'baridimob'
+            ? `Commande enregistrée (Règlement BaridiMob / CCP${paymentReference ? ` - Réf: ${paymentReference}` : ''})`
+            : paymentMethod === 'bank_transfer'
+            ? `Commande enregistrée (Virement Bancaire CIB${paymentReference ? ` - Réf: ${paymentReference}` : ''})`
+            : 'Commande enregistrée (Paiement en espèces à la livraison)'
         }
       ]
     };
@@ -889,37 +994,56 @@ app.post('/api/orders', (req, res) => {
 
 // Orders tracking / details
 app.get('/api/orders/:id', (req, res) => {
-  const order = orders.find(o => o.id === req.params.id);
+  const cleanId = String(req.params.id || '').trim().toUpperCase();
+  const order = orders.find(o => o.id.toUpperCase() === cleanId);
   if (!order) {
-    return res.status(404).json({ success: false, error: 'Commande introuvable' });
+    return res.status(404).json({ success: false, error: 'Commande introuvable. Vérifiez la référence (ex: DZ-2609-1024).' });
   }
   res.json({ success: true, order });
 });
 
-// Admin list orders
+// Orders list (Admin sees all, authenticated customer sees only their own)
 app.get('/api/orders', (req, res) => {
-  const { status, search } = req.query;
-  let result = [...orders];
-
-  if (status && status !== 'all') {
-    result = result.filter(o => o.status === status);
+  const user = getRequestUser(req);
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      error: 'Connexion requise pour consulter les commandes.'
+    });
   }
 
-  if (search && typeof search === 'string') {
-    const q = search.toLowerCase().trim();
-    result = result.filter(o =>
-      o.id.toLowerCase().includes(q) ||
-      o.customerName.toLowerCase().includes(q) ||
-      o.phone.includes(q) ||
-      o.wilayaName.toLowerCase().includes(q)
-    );
+  // If Admin: full access with filters
+  if (user.role === 'admin') {
+    const { status, search } = req.query;
+    let result = [...orders];
+
+    if (status && status !== 'all') {
+      result = result.filter(o => o.status === status);
+    }
+
+    if (search && typeof search === 'string') {
+      const q = search.toLowerCase().trim();
+      result = result.filter(o =>
+        o.id.toLowerCase().includes(q) ||
+        o.customerName.toLowerCase().includes(q) ||
+        o.phone.includes(q) ||
+        o.wilayaName.toLowerCase().includes(q)
+      );
+    }
+
+    return res.json({ success: true, orders: result });
   }
 
-  res.json({ success: true, orders: result });
+  // Customer: only their own orders
+  const cleanUserPhone = user.phone.replace(/\s+/g, '');
+  const myOrders = orders.filter(
+    o => o.phone.replace(/\s+/g, '') === cleanUserPhone || o.customerName.toLowerCase() === user.name.toLowerCase()
+  );
+  return res.json({ success: true, orders: myOrders });
 });
 
-// Admin update order status
-app.patch('/api/orders/:id/status', (req, res) => {
+// Admin update order status (Protected)
+app.patch('/api/orders/:id/status', requireAdmin, (req, res) => {
   const { status, note } = req.body;
   const order = orders.find(o => o.id === req.params.id);
   if (!order) {
@@ -972,8 +1096,8 @@ app.patch('/api/orders/:id/status', (req, res) => {
   res.json({ success: true, order });
 });
 
-// Admin internal notes
-app.patch('/api/orders/:id/notes', (req, res) => {
+// Admin internal notes (Protected)
+app.patch('/api/orders/:id/notes', requireAdmin, (req, res) => {
   const { internalNotes } = req.body;
   const order = orders.find(o => o.id === req.params.id);
   if (!order) {
@@ -984,13 +1108,13 @@ app.patch('/api/orders/:id/notes', (req, res) => {
   res.json({ success: true, order });
 });
 
-// Admin CRM Customers
-app.get('/api/customers', (req, res) => {
+// Admin CRM Customers (Protected)
+app.get('/api/customers', requireAdmin, (req, res) => {
   res.json({ success: true, customers });
 });
 
-// Admin Analytics
-app.get('/api/analytics', (req, res) => {
+// Admin Analytics (Protected)
+app.get('/api/analytics', requireAdmin, (req, res) => {
   const totalRevenue = orders
     .filter(o => o.status !== 'cancelled')
     .reduce((sum, o) => sum + o.total, 0);
