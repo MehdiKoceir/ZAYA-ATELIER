@@ -11,9 +11,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     price: 4900,
     salePrice: 4200,
     images: [
-      'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?q=80&w=1000&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1589310243389-96a5483213a8?q=80&w=1000&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1000&auto=format&fit=crop'
+      '/images/linen_oversize_shirt_1789648499860.jpg'
     ],
     category: 'chemises',
     categoryFr: 'Chemises & Blouses',
@@ -56,8 +54,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     descriptionAr: 'تصميم يجمع بين التراث الجزائري الفاخر واللمسة العصرية الراقية. قماش كريب حريري ثقيل بانسيابية ملكية وتطريز متقن مع حزام ذهبي أنيق.',
     price: 14800,
     images: [
-      'https://images.unsplash.com/photo-1566174053879-31528523f8ae?q=80&w=1000&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=80&w=1000&auto=format&fit=crop'
+      '/images/modern_caftan_dress_1789648482081.jpg'
     ],
     category: 'caftans',
     categoryFr: 'Caftans & Soirée',
@@ -97,8 +94,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     descriptionAr: 'بليزر كلاسيكي عصري بقصة محكمة وكتفين مدمجين، أزرار عاجية وبطانة ستان ناعمة، يمنحك إطلالة راقية في العمل والمناسبات.',
     price: 11500,
     images: [
-      'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=1000&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1548624149-f748154e153b?q=80&w=1000&auto=format&fit=crop'
+      '/images/wool_blazer_charcoal_1789648529813.jpg'
     ],
     category: 'vestes',
     categoryFr: 'Vestes & Blazers',
@@ -137,8 +133,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     descriptionAr: 'خصر عالي مريح مع ثنيات دائمة أنيقة تمنح قواماً رشيقاً وممشوقاً. قماش خفيف وناعم لا يتجعد أبداً، مناسب للتنقل والإطلالات اليومية.',
     price: 6200,
     images: [
-      'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=1000&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000&auto=format&fit=crop'
+      '/images/palazzo_pants_model_1789648513258.jpg'
     ],
     category: 'pantalons',
     categoryFr: 'Pantalons & Ensembles',
@@ -178,8 +173,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     descriptionAr: 'قصة واسعة انسيابية بأكمام كيمونو رحبة وتشطيب يدوي متقن. يمكن ارتداؤها مفتوحة لمظهر يومي شبابي أو مع حزام للمناسبات.',
     price: 9800,
     images: [
-      'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=1000&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?q=80&w=1000&auto=format&fit=crop'
+      '/images/abaya_kimono_silk_1789648470680.jpg'
     ],
     category: 'caftans',
     categoryFr: 'Caftans & Soirée',
@@ -218,8 +212,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     descriptionAr: 'صنعت يدوياً في ورشة جلدية عريقة بالجزائر العاصمة. جلد بقري طبيعي 100% مدبوغ بمواد نباتية ومزين بإبزيم ذهبي متين.',
     price: 8900,
     images: [
-      'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=1000&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?q=80&w=1000&auto=format&fit=crop'
+      'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?q=80&w=1200&auto=format&fit=crop'
     ],
     category: 'accessoires',
     categoryFr: 'Accessoires & Maroquinerie',
@@ -255,8 +248,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     price: 13200,
     salePrice: 11900,
     images: [
-      'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?q=80&w=1000&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?q=80&w=1000&auto=format&fit=crop'
+      'https://images.unsplash.com/photo-1568252542512-9fe8fe9c87bb?q=80&w=1200&auto=format&fit=crop'
     ],
     category: 'robes',
     categoryFr: 'Robes & Ensembles',
@@ -296,8 +288,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     descriptionAr: 'كنزة خفيفة ودافئة بملمس الكشمير فائق النعومة، قصة ملائمة للجسم وياقة مرتفعة، تناسب إطلالات العمل والخريف والشتاء.',
     price: 5400,
     images: [
-      'https://images.unsplash.com/photo-1576871337632-b9aef4c17ab9?q=80&w=1000&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=1000&auto=format&fit=crop'
+      'https://images.unsplash.com/photo-1576871337632-b9aef4c17ab9?q=80&w=1200&auto=format&fit=crop'
     ],
     category: 'chemises',
     categoryFr: 'Chemises & Blouses',

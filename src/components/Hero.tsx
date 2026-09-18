@@ -72,7 +72,7 @@ export const Hero: React.FC<HeroProps> = ({ language, onExploreClick }) => {
               {/* Primary tall photo */}
               <div className="col-span-7 relative group overflow-hidden shadow-xl bg-stone-200 aspect-[3/4]">
                 <img
-                  src="https://images.unsplash.com/photo-1566174053879-31528523f8ae?q=80&w=1200&auto=format&fit=crop"
+                  src="/images/modern_caftan_dress_1789648482081.jpg"
                   alt="ZAYA Atelier Robe & Caftan"
                   className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
                   referrerPolicy="no-referrer"
@@ -88,7 +88,7 @@ export const Hero: React.FC<HeroProps> = ({ language, onExploreClick }) => {
               <div className="col-span-5 space-y-3 sm:space-y-4">
                 <div className="overflow-hidden shadow-md bg-stone-200 aspect-[4/5] relative group">
                   <img
-                    src="https://images.unsplash.com/photo-1598033129183-c4f50c736f10?q=80&w=800&auto=format&fit=crop"
+                    src="/images/linen_oversize_shirt_1789648499860.jpg"
                     alt="Chemise Lin Naturel"
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
                     referrerPolicy="no-referrer"

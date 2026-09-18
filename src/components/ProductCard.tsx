@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Heart, MessageCircle, Eye, ShoppingBag } from 'lucide-react';
 import { Product, Language } from '../types';
 import { formatDA, translations, buildWhatsAppLink, BOUTIQUE_PHONE } from '../lib/i18n';
@@ -20,7 +20,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onToggleWishlist,
   onQuickOrderWhatsApp
 }) => {
-  const [isHovered, setIsHovered] = useState(false);
   const t = translations[language];
 
   const displayPrice = product.salePrice ?? product.price;
@@ -34,7 +33,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const isOutOfStock = totalStock <= 0;
   const isLowStock = totalStock > 0 && totalStock < 5;
 
-  const currentImg = isHovered && product.images[1] ? product.images[1] : product.images[0];
+  const currentImg = product.images[0] || '';
 
   const handleWhatsApp = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -47,8 +46,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <div
       onClick={() => onSelect(product)}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       className="group cursor-pointer flex flex-col bg-[#FAF8F5] transition-all duration-300"
     >
       {/* Image Container */}

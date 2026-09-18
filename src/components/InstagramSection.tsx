@@ -14,28 +14,28 @@ export const InstagramSection: React.FC<InstagramSectionProps> = ({ language, on
 
   const looks = [
     {
-      img: 'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?q=80&w=600&auto=format&fit=crop',
+      img: '/images/linen_oversize_shirt_1789648499860.jpg',
       caption: 'L’élégance décontractée en pur lin naturel. Confectionné pour les après-midis d’Alger.',
       productId: 'prod-001',
       tag: '#ZAYALin'
     },
     {
-      img: 'https://images.unsplash.com/photo-1566174053879-31528523f8ae?q=80&w=600&auto=format&fit=crop',
+      img: '/images/modern_caftan_dress_1789648482081.jpg',
       caption: 'Caftan Moderne Émeraude. La fusion parfaite entre patrimoine et contemporanéité.',
       productId: 'prod-002',
       tag: '#ZAYACouture'
     },
     {
-      img: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop',
-      caption: 'Le Blazer El Casbah en laine fine. Une carrure affirmée pour vos rendez-vous.',
+      img: '/images/wool_blazer_charcoal_1789648529813.jpg',
+      caption: 'Le Blazer El Casbah en drap de laine pure. Une silhouette affirmée pour vos rendez-vous.',
       productId: 'prod-003',
       tag: '#ZAYABlazer'
     },
     {
-      img: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=600&auto=format&fit=crop',
-      caption: 'Besace en cuir d’Algérie véritable, teinte ambrée et finitions dorées.',
-      productId: 'prod-006',
-      tag: '#ZAYALeather'
+      img: '/images/abaya_kimono_silk_1789648470680.jpg',
+      caption: 'Kimono Abaya en crêpe de soie fluide. Tomber impérial et finitions couture.',
+      productId: 'prod-005',
+      tag: '#ZAYAAbaya'
     }
   ];
 

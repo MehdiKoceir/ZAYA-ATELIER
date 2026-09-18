@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Heart, MessageCircle, ShoppingBag, Truck, ShieldCheck, Check, Share2, AlertCircle, Lock } from 'lucide-react';
+import { X, Heart, MessageCircle, ShoppingBag, Truck, ShieldCheck, Check, Share2, AlertCircle, Lock, ZoomIn, ZoomOut } from 'lucide-react';
 import { Product, ProductVariant, Language } from '../types';
 import { formatDA, translations, buildWhatsAppLink, BOUTIQUE_PHONE } from '../lib/i18n';
 import { useAuth } from '../context/AuthContext';
@@ -30,6 +30,15 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   const [selectedImage, setSelectedImage] = useState<string>(product?.images[0] || '');
   const [quantity, setQuantity] = useState<number>(1);
   const [copied, setCopied] = useState<boolean>(false);
+  const [isZoomed, setIsZoomed] = useState<boolean>(false);
+  const [zoomPos, setZoomPos] = useState<{ x: number; y: number }>({ x: 50, y: 50 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = Math.max(0, Math.min(100, ((e.clientX - left) / width) * 100));
+    const y = Math.max(0, Math.min(100, ((e.clientY - top) / height) * 100));
+    setZoomPos({ x, y });
+  };
 
   // When product changes, reset defaults
   useEffect(() => {
@@ -38,6 +47,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
       setSelectedSize(product.sizes[0] || '');
       setSelectedImage(product.images[0] || '');
       setQuantity(1);
+      setIsZoomed(false);
     }
   }, [product]);
 
@@ -104,18 +114,48 @@ export const ProductModal: React.FC<ProductModalProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-12 gap-0">
           {/* Images Section */}
           <div className="md:col-span-6 bg-stone-100 p-4 sm:p-6 flex flex-col justify-between border-b md:border-b-0 md:border-r border-[#E8E1D5]">
-            <div className="relative aspect-[3/4] overflow-hidden bg-stone-200">
+            <div
+              className="relative aspect-[3/4] overflow-hidden bg-stone-200 cursor-crosshair group select-none"
+              onMouseEnter={() => setIsZoomed(true)}
+              onMouseLeave={() => setIsZoomed(false)}
+              onMouseMove={handleMouseMove}
+              onClick={() => setIsZoomed(!isZoomed)}
+            >
               <img
                 src={selectedImage}
                 alt={product.name}
-                className="w-full h-full object-cover object-center"
+                style={{
+                  transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
+                  transform: isZoomed ? 'scale(2.2)' : 'scale(1)',
+                  transition: isZoomed ? 'transform 0.08s ease-out' : 'transform 0.3s ease-in-out'
+                }}
+                className="w-full h-full object-cover object-center pointer-events-none"
                 referrerPolicy="no-referrer"
               />
               {product.isNew && (
-                <span className="absolute top-3 left-3 bg-[#1A1918] text-[#FAF8F5] text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5">
+                <span className="absolute top-3 left-3 bg-[#1A1918] text-[#FAF8F5] text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 pointer-events-none">
                   {t.newArrivals}
                 </span>
               )}
+
+              {/* HD Fabric Texture Loupe Indicator */}
+              <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between pointer-events-none">
+                <span className="bg-black/75 backdrop-blur-xs text-white text-[10px] px-2 py-1 rounded-xs flex items-center gap-1 shadow-sm">
+                  {isZoomed ? <ZoomOut className="w-3 h-3 text-[#E6C697]" /> : <ZoomIn className="w-3 h-3 text-[#E6C697]" />}
+                  {language === 'ar' ? 'فحص دقيق لتفاصيل القماش والخياطة' : 'Loupe HD • Détail & Texture réelle'}
+                </span>
+                {isZoomed && (
+                  <span className="bg-[#E6C697] text-[#1A1918] font-bold text-[10px] px-1.5 py-0.5 rounded-xs shadow-sm">
+                    2.2x
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Fabric Material Spec */}
+            <div className="mt-2.5 px-2 py-1.5 bg-[#FAF8F5] border border-[#E8E1D5] flex items-center justify-between text-[11px] text-[#696156]">
+              <span className="font-medium text-[#1A1918]">{language === 'ar' ? 'المادة والخامة:' : 'Matière & Confection:'}</span>
+              <span className="truncate ml-2 text-[#8A5A36] font-semibold">{language === 'ar' ? product.materialAr : product.material}</span>
             </div>
 
             {/* Thumbnails */}

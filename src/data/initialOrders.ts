@@ -30,7 +30,7 @@ export const INITIAL_ORDERS: Order[] = [
         quantity: 1,
         unitPrice: 14800,
         total: 14800,
-        image: 'https://images.unsplash.com/photo-1566174053879-31528523f8ae?q=80&w=300&auto=format&fit=crop'
+        image: '/images/modern_caftan_dress_1789648482081.jpg'
       },
       {
         productId: 'prod-001',
@@ -41,7 +41,7 @@ export const INITIAL_ORDERS: Order[] = [
         quantity: 1,
         unitPrice: 4900,
         total: 4900,
-        image: 'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?q=80&w=300&auto=format&fit=crop'
+        image: '/images/linen_oversize_shirt_1789648499860.jpg'
       }
     ],
     timeline: [
@@ -78,7 +78,7 @@ export const INITIAL_ORDERS: Order[] = [
         quantity: 1,
         unitPrice: 11500,
         total: 11500,
-        image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=300&auto=format&fit=crop'
+        image: '/images/wool_blazer_charcoal_1789648529813.jpg'
       }
     ],
     timeline: [
@@ -116,7 +116,7 @@ export const INITIAL_ORDERS: Order[] = [
         quantity: 1,
         unitPrice: 6200,
         total: 6200,
-        image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=300&auto=format&fit=crop'
+        image: '/images/palazzo_pants_model_1789648513258.jpg'
       }
     ],
     timeline: [
@@ -157,7 +157,7 @@ export const INITIAL_ORDERS: Order[] = [
         quantity: 1,
         unitPrice: 8900,
         total: 8900,
-        image: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=300&auto=format&fit=crop'
+        image: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?q=80&w=300&auto=format&fit=crop'
       }
     ],
     timeline: [
@@ -196,7 +196,7 @@ export const INITIAL_ORDERS: Order[] = [
         quantity: 1,
         unitPrice: 13200,
         total: 13200,
-        image: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?q=80&w=300&auto=format&fit=crop'
+        image: 'https://images.unsplash.com/photo-1568252542512-9fe8fe9c87bb?q=80&w=300&auto=format&fit=crop'
       }
     ],
     timeline: [
