@@ -12,6 +12,7 @@ interface PublicNavbarProps {
   cartCount: number;
   wishlistCount: number;
   onOpenCart: () => void;
+  onOpenTracking?: () => void;
 }
 
 export const PublicNavbar: React.FC<PublicNavbarProps> = ({
@@ -20,6 +21,7 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
   onLanguageChange,
   cartCount,
   onOpenCart,
+  onOpenTracking,
 }) => {
   const { user } = useAuth();
 
@@ -29,10 +31,14 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
       <div className="bg-[#1A1918] text-[#FAF8F5] text-[11px] py-2 px-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4 text-[10px] sm:text-[11px] font-medium tracking-wide">
-            <span className="flex items-center gap-1 text-[#C5A880]">
-              <Truck className="w-3 h-3" />
-              <span>Livraison 58 Wilayas</span>
-            </span>
+            <button
+              onClick={onOpenTracking}
+              className="flex items-center gap-1.5 text-[#C5A880] hover:text-white transition-colors cursor-pointer"
+              title="Suivre mon colis dans les 58 Wilayas"
+            >
+              <Truck className="w-3 h-3 text-[#C5A880]" />
+              <span>Livraison 58 Wilayas • <span className="underline decoration-[#C5A880]/60 underline-offset-2">Suivre mon colis</span></span>
+            </button>
             <span className="hidden md:inline text-stone-500">•</span>
             <span className="hidden md:flex items-center gap-1 text-stone-300">
               <ShieldCheck className="w-3 h-3 text-[#C5A880]" />

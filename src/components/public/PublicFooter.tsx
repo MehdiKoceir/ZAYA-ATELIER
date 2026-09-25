@@ -4,9 +4,10 @@ import { AppRoute } from '../../lib/router';
 
 interface PublicFooterProps {
   onNavigate: (route: AppRoute) => void;
+  onOpenTracking?: () => void;
 }
 
-export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
+export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate, onOpenTracking }) => {
   return (
     <footer className="bg-[#141210] text-[#FAF8F5] border-t border-stone-800 text-left">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
@@ -95,7 +96,10 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate('/dashboard/orders')} className="hover:text-white transition-colors cursor-pointer">
+                <button
+                  onClick={() => onOpenTracking ? onOpenTracking() : onNavigate('/dashboard/orders')}
+                  className="hover:text-white transition-colors cursor-pointer"
+                >
                   Suivi de Commande (58 Wilayas)
                 </button>
               </li>

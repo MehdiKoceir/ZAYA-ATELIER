@@ -36,8 +36,10 @@ import {
   Mail,
   FileText,
   CreditCard,
-  Info
+  Info,
+  Printer
 } from 'lucide-react';
+import { OrderInvoiceModal } from './OrderInvoiceModal';
 
 interface CustomerDashboardProps {
   currentRoute: AppRoute;
@@ -89,6 +91,13 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
   const handleTrackOrder = (orderId: string) => {
     setSelectedTrackingOrderId(orderId);
     onNavigate('/dashboard/tracking');
+  };
+
+  // Print Invoice Modal state
+  const [selectedInvoiceOrder, setSelectedInvoiceOrder] = useState<Order | null>(null);
+
+  const handlePrintInvoice = (order: Order) => {
+    setSelectedInvoiceOrder(order);
   };
 
   // Catalog tab filters
@@ -637,6 +646,14 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
 
                   <div className="flex items-center gap-2">
                     <button
+                      onClick={() => handlePrintInvoice(order as Order)}
+                      className="px-3.5 py-2 bg-white hover:bg-stone-50 border border-[#DDD5CA] text-stone-800 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-2xs cursor-pointer"
+                      title="Imprimer ou enregistrer la facture d'achat en PDF"
+                    >
+                      <Printer className="w-3.5 h-3.5 text-stone-600" />
+                      <span>Facture</span>
+                    </button>
+                    <button
                       onClick={() => handleTrackOrder(order.id)}
                       className="px-3.5 py-2 bg-[#1A1918] text-white rounded-lg text-xs font-semibold hover:bg-black transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer"
                     >
@@ -648,7 +665,7 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
                         const msg = `Salam ZAYA Atelier, je demande l'état de ma commande ${order.id}`;
                         window.open(buildWhatsAppLink(BOUTIQUE_PHONE, msg), '_blank');
                       }}
-                      className="px-3.5 py-2 bg-[#25D366] text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-xs"
+                      className="px-3.5 py-2 bg-[#25D366] text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-xs cursor-pointer"
                     >
                       <Phone className="w-3.5 h-3.5" />
                       <span>WhatsApp Concierge</span>
@@ -952,6 +969,14 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
                       </div>
 
                       <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handlePrintInvoice(order as Order)}
+                          className="px-3.5 py-2 bg-stone-100 hover:bg-stone-200 border border-stone-300 text-stone-800 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-2xs cursor-pointer"
+                          title="Imprimer ou enregistrer la facture d'achat en PDF"
+                        >
+                          <Printer className="w-3.5 h-3.5 text-stone-700" />
+                          <span>Imprimer Facture</span>
+                        </button>
                         <button
                           onClick={() => handleTrackOrder(order.id)}
                           className="px-3.5 py-2 bg-[#1A1918] text-white rounded-lg text-xs font-semibold hover:bg-black transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer"
@@ -1602,6 +1627,13 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({
           </div>
         )}
       </main>
+
+      {/* Printable PDF Invoice Modal */}
+      <OrderInvoiceModal
+        order={selectedInvoiceOrder}
+        language={language}
+        onClose={() => setSelectedInvoiceOrder(null)}
+      />
     </div>
   );
 };

@@ -83,13 +83,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ language }) => {
   // Selected wilaya details
   const selectedWilayaObj = ALGERIAN_WILAYAS.find(w => w.code === registerWilayaCode) || ALGERIAN_WILAYAS[15];
 
-  // Demo Login quick fill
-  const handleDemoFill = (identifier: string, pass: string) => {
-    setLoginIdentifier(identifier);
-    setLoginPassword(pass);
-    setErrorMessage(null);
-  };
-
   // Submit Login
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -415,38 +408,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ language }) => {
                 )}
               </button>
 
-              {/* Quick 1-Tap Demo Logins */}
-              <div className="pt-2 border-t border-[#EAE4DC]">
-                <p className="text-[10px] uppercase tracking-wider text-[#8A8175] font-semibold text-center mb-1.5">
-                  {language === 'ar' ? 'أو تجربة الحسابات السريعة' : 'Comptes Démo (1 Clic)'}
-                </p>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleDemoFill('sarah@zaya.dz', 'sarah2026')}
-                    className="p-1.5 bg-white hover:bg-[#F2EDE6] border border-[#DDD5CA] rounded-md text-left text-[11px] transition-all flex items-center justify-between group"
-                  >
-                    <span className="font-semibold text-[#1A1918] group-hover:text-[#A66C44] flex items-center gap-1">
-                      <Crown className="w-3 h-3 text-[#C5A880]" /> Sarah (VIP)
-                    </span>
-                    <span className="text-[10px] text-[#7E7569]">Hydra</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleDemoFill('amelia@zaya.dz', 'amelia123')}
-                    className="p-1.5 bg-white hover:bg-[#F2EDE6] border border-[#DDD5CA] rounded-md text-left text-[11px] transition-all flex items-center justify-between group"
-                  >
-                    <span className="font-semibold text-[#1A1918] group-hover:text-[#A66C44] flex items-center gap-1">
-                      <Sparkles className="w-3 h-3 text-[#C5A880]" /> Amélia
-                    </span>
-                    <span className="text-[10px] text-[#7E7569]">Alger</span>
-                  </button>
-                </div>
-              </div>
-
               {/* Switch to Register footer */}
-              <div className="text-center pt-1 text-[11px] text-[#7E7569]">
+              <div className="text-center pt-2 text-[11px] text-[#7E7569]">
                 <span>{language === 'ar' ? 'ليس لديك حساب بعد؟' : 'Pas encore de compte ?'}{' '}</span>
                 <button
                   type="button"

@@ -68,27 +68,6 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialTab = 'login', onNavi
     }
   };
 
-  // Handle Quick Demo Login
-  const handleQuickDemo = async (email: string, pass: string) => {
-    setErrorMsg(null);
-    setLoginIdentifier(email);
-    setLoginPassword(pass);
-    setLoading(true);
-    try {
-      const res = await login(email, pass);
-      if (res.success) {
-        setSuccessMsg(`Connecté en tant que ${email}. Redirection...`);
-        setTimeout(() => {
-          onNavigate('/dashboard');
-        }, 400);
-      } else {
-        setErrorMsg(res.error || 'Erreur de connexion');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // Handle Register
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -313,36 +292,6 @@ export const AuthPage: React.FC<AuthPageProps> = ({ initialTab = 'login', onNavi
                 </>
               )}
             </button>
-
-            {/* 1-Click Demo Accounts for Easy Evaluation */}
-            <div className="pt-4 border-t border-[#EAE4DC] space-y-2">
-              <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-stone-400 font-semibold justify-center">
-                <Sparkles className="w-3 h-3 text-[#C5A880]" />
-                <span>Accès Démo 1-Clic pour tester le Dashboard</span>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleQuickDemo('sarah@zaya.dz', 'sarah2026')}
-                  className="p-2 border border-[#E5DDD0] bg-[#FAF8F5] hover:bg-[#F0EBE1] rounded-lg text-left transition-colors text-[11px]"
-                >
-                  <p className="font-bold text-[#1A1918] flex items-center gap-1">
-                    <span>Sarah Benali</span>
-                    <Crown className="w-2.5 h-2.5 text-[#C5A880]" />
-                  </p>
-                  <p className="text-[10px] text-stone-500">VIP Atelier (Alger)</p>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleQuickDemo('amelia@zaya.dz', 'amelia123')}
-                  className="p-2 border border-[#E5DDD0] bg-[#FAF8F5] hover:bg-[#F0EBE1] rounded-lg text-left transition-colors text-[11px]"
-                >
-                  <p className="font-bold text-[#1A1918]">Amélia Ziani</p>
-                  <p className="text-[10px] text-stone-500">Privilège (Alger)</p>
-                </button>
-              </div>
-            </div>
 
             <div className="text-center pt-2 text-xs text-[#736B60]">
               Pas encore de compte ?{' '}

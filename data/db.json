@@ -1,0 +1,1289 @@
+{
+  "products": [
+    {
+      "id": "prod-001",
+      "name": "Chemise Oversize en Pur Lin",
+      "nameAr": "قميص كتان أوفرسايز فاخر",
+      "slug": "chemise-oversize-lin",
+      "description": "Une pièce maîtresse décontractée et raffinée, confectionnée dans un lin naturel respirant de première qualité. Coupe ample moderne, col classique et boutons en nacre véritable. Parfaite pour le climat algérien en toute saison.",
+      "descriptionAr": "قطعة أنيقة وخفيفة مصنوعة من الكتان الطبيعي الفاخر 100%. قصة واسعة مريحة مع أزرار صدفية أصلية، مثالية للأجواء الصيفية والمناسبات اليومية في الجزائر.",
+      "price": 4900,
+      "salePrice": 4200,
+      "images": [
+        "/images/linen_oversize_shirt_1789648499860.jpg"
+      ],
+      "category": "chemises",
+      "categoryFr": "Chemises & Blouses",
+      "categoryAr": "قمصان وبلوزات",
+      "collection": "ete-alger",
+      "collectionFr": "Capsule Lin & Soleil",
+      "collectionAr": "تشكيلة الكتان والصيف",
+      "colors": [
+        {
+          "name": "Noir",
+          "hex": "#1A1A1A"
+        },
+        {
+          "name": "Blanc Pur",
+          "hex": "#FFFFFF"
+        },
+        {
+          "name": "Beige Sable",
+          "hex": "#D2B48C"
+        }
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "material": "100% Lin Naturel Italien",
+      "materialAr": "100% كتان إيطالي طبيعي",
+      "sku": "ZY-SH-001",
+      "stock": 22,
+      "isFeatured": true,
+      "isNew": true,
+      "isBestSeller": true,
+      "createdAt": "2026-09-01T10:00:00Z",
+      "variants": [
+        {
+          "id": "v-001-1",
+          "productId": "prod-001",
+          "color": "Noir",
+          "colorHex": "#1A1A1A",
+          "size": "S",
+          "stock": 2,
+          "sku": "ZY-SH-001-BK-S"
+        },
+        {
+          "id": "v-001-2",
+          "productId": "prod-001",
+          "color": "Noir",
+          "colorHex": "#1A1A1A",
+          "size": "M",
+          "stock": 4,
+          "sku": "ZY-SH-001-BK-M"
+        },
+        {
+          "id": "v-001-3",
+          "productId": "prod-001",
+          "color": "Noir",
+          "colorHex": "#1A1A1A",
+          "size": "L",
+          "stock": 2,
+          "sku": "ZY-SH-001-BK-L"
+        },
+        {
+          "id": "v-001-4",
+          "productId": "prod-001",
+          "color": "Blanc Pur",
+          "colorHex": "#FFFFFF",
+          "size": "S",
+          "stock": 3,
+          "sku": "ZY-SH-001-WH-S"
+        },
+        {
+          "id": "v-001-5",
+          "productId": "prod-001",
+          "color": "Blanc Pur",
+          "colorHex": "#FFFFFF",
+          "size": "M",
+          "stock": 5,
+          "sku": "ZY-SH-001-WH-M"
+        },
+        {
+          "id": "v-001-6",
+          "productId": "prod-001",
+          "color": "Blanc Pur",
+          "colorHex": "#FFFFFF",
+          "size": "L",
+          "stock": 0,
+          "sku": "ZY-SH-001-WH-L"
+        },
+        {
+          "id": "v-001-7",
+          "productId": "prod-001",
+          "color": "Beige Sable",
+          "colorHex": "#D2B48C",
+          "size": "S",
+          "stock": 1,
+          "sku": "ZY-SH-001-BG-S"
+        },
+        {
+          "id": "v-001-8",
+          "productId": "prod-001",
+          "color": "Beige Sable",
+          "colorHex": "#D2B48C",
+          "size": "M",
+          "stock": 3,
+          "sku": "ZY-SH-001-BG-M"
+        },
+        {
+          "id": "v-001-9",
+          "productId": "prod-001",
+          "color": "Beige Sable",
+          "colorHex": "#D2B48C",
+          "size": "L",
+          "stock": 2,
+          "sku": "ZY-SH-001-BG-L"
+        }
+      ],
+      "rating": 5,
+      "reviewCount": 2
+    },
+    {
+      "id": "prod-002",
+      "name": "Caftan Moderne Ceinture Métallique",
+      "nameAr": "قفطان عصري مع حزام معدني راقي",
+      "slug": "caftan-moderne-ceinture",
+      "description": "Une réinterprétation contemporaine de l’héritage algérien. Confectionné dans un crêpe de soie lourd à tombé impérial avec broderie fine ton sur ton et ceinture dorée amovible martelée à la main.",
+      "descriptionAr": "تصميم يجمع بين التراث الجزائري الفاخر واللمسة العصرية الراقية. قماش كريب حريري ثقيل بانسيابية ملكية وتطريز متقن مع حزام ذهبي أنيق.",
+      "price": 14800,
+      "images": [
+        "/images/modern_caftan_dress_1789648482081.jpg"
+      ],
+      "category": "caftans",
+      "categoryFr": "Caftans & Soirée",
+      "categoryAr": "قفطان وسهرات",
+      "collection": "alger-noir",
+      "collectionFr": "Collection Cérémonie & Soir",
+      "collectionAr": "تشكيلة المناسبات والسهرات",
+      "colors": [
+        {
+          "name": "Émeraude Royal",
+          "hex": "#0B5345"
+        },
+        {
+          "name": "Noir Minuit",
+          "hex": "#111111"
+        },
+        {
+          "name": "Ivoire Crème",
+          "hex": "#FDFBF7"
+        }
+      ],
+      "sizes": [
+        "38 (S/M)",
+        "40 (M/L)",
+        "42 (L/XL)"
+      ],
+      "material": "Crêpe de Soie & Fil d’Or Sfifa",
+      "materialAr": "كريب حريري وخيوط السفيفة الذهبية",
+      "sku": "ZY-CFT-002",
+      "stock": 11,
+      "isFeatured": true,
+      "isNew": true,
+      "isBestSeller": true,
+      "createdAt": "2026-09-02T11:00:00Z",
+      "variants": [
+        {
+          "id": "v-002-1",
+          "productId": "prod-002",
+          "color": "Émeraude Royal",
+          "colorHex": "#0B5345",
+          "size": "38 (S/M)",
+          "stock": 2,
+          "sku": "ZY-CFT-002-EM-38"
+        },
+        {
+          "id": "v-002-2",
+          "productId": "prod-002",
+          "color": "Émeraude Royal",
+          "colorHex": "#0B5345",
+          "size": "40 (M/L)",
+          "stock": 2,
+          "sku": "ZY-CFT-002-EM-40"
+        },
+        {
+          "id": "v-002-3",
+          "productId": "prod-002",
+          "color": "Noir Minuit",
+          "colorHex": "#111111",
+          "size": "38 (S/M)",
+          "stock": 3,
+          "sku": "ZY-CFT-002-BK-38"
+        },
+        {
+          "id": "v-002-4",
+          "productId": "prod-002",
+          "color": "Noir Minuit",
+          "colorHex": "#111111",
+          "size": "40 (M/L)",
+          "stock": 2,
+          "sku": "ZY-CFT-002-BK-40"
+        },
+        {
+          "id": "v-002-5",
+          "productId": "prod-002",
+          "color": "Ivoire Crème",
+          "colorHex": "#FDFBF7",
+          "size": "38 (S/M)",
+          "stock": 1,
+          "sku": "ZY-CFT-002-IV-38"
+        },
+        {
+          "id": "v-002-6",
+          "productId": "prod-002",
+          "color": "Ivoire Crème",
+          "colorHex": "#FDFBF7",
+          "size": "40 (M/L)",
+          "stock": 1,
+          "sku": "ZY-CFT-002-IV-40"
+        }
+      ]
+    },
+    {
+      "id": "prod-003",
+      "name": "Blazer Croisé Laine Structuré \"El Casbah\"",
+      "nameAr": "سترة بليزر صوفية مزدوجة الصدر",
+      "slug": "blazer-croise-laine",
+      "description": "Blazer d’architecte à la silhouette affirmée. Épaulettes structurées, boutonnage croisé à six boutons corne, doublure en satin soyeux. L’élégance urbaine absolue pour vos réunions et dîners.",
+      "descriptionAr": "بليزر كلاسيكي عصري بقصة محكمة وكتفين مدمجين، أزرار عاجية وبطانة ستان ناعمة، يمنحك إطلالة راقية في العمل والمناسبات.",
+      "price": 11500,
+      "images": [
+        "/images/wool_blazer_charcoal_1789648529813.jpg"
+      ],
+      "category": "vestes",
+      "categoryFr": "Vestes & Blazers",
+      "categoryAr": "سترات وبليزر",
+      "collection": "intemporels",
+      "collectionFr": "Les Intemporels ZAYA",
+      "collectionAr": "التشكيلة الدائمة",
+      "colors": [
+        {
+          "name": "Taupe Cendré",
+          "hex": "#8B8589"
+        },
+        {
+          "name": "Noir Charbon",
+          "hex": "#1C1C1C"
+        }
+      ],
+      "sizes": [
+        "36",
+        "38",
+        "40",
+        "42"
+      ],
+      "material": "Drap de Laine Vierge & Satin",
+      "materialAr": "صوف خالص وبطانة ستان",
+      "sku": "ZY-BZ-003",
+      "stock": 14,
+      "isFeatured": true,
+      "isNew": false,
+      "isBestSeller": true,
+      "createdAt": "2026-08-25T14:00:00Z",
+      "variants": [
+        {
+          "id": "v-003-1",
+          "productId": "prod-003",
+          "color": "Taupe Cendré",
+          "colorHex": "#8B8589",
+          "size": "36",
+          "stock": 2,
+          "sku": "ZY-BZ-003-TP-36"
+        },
+        {
+          "id": "v-003-2",
+          "productId": "prod-003",
+          "color": "Taupe Cendré",
+          "colorHex": "#8B8589",
+          "size": "38",
+          "stock": 3,
+          "sku": "ZY-BZ-003-TP-38"
+        },
+        {
+          "id": "v-003-3",
+          "productId": "prod-003",
+          "color": "Taupe Cendré",
+          "colorHex": "#8B8589",
+          "size": "40",
+          "stock": 1,
+          "sku": "ZY-BZ-003-TP-40"
+        },
+        {
+          "id": "v-003-4",
+          "productId": "prod-003",
+          "color": "Noir Charbon",
+          "colorHex": "#1C1C1C",
+          "size": "36",
+          "stock": 2,
+          "sku": "ZY-BZ-003-BK-36"
+        },
+        {
+          "id": "v-003-5",
+          "productId": "prod-003",
+          "color": "Noir Charbon",
+          "colorHex": "#1C1C1C",
+          "size": "38",
+          "stock": 4,
+          "sku": "ZY-BZ-003-BK-38"
+        },
+        {
+          "id": "v-003-6",
+          "productId": "prod-003",
+          "color": "Noir Charbon",
+          "colorHex": "#1C1C1C",
+          "size": "40",
+          "stock": 2,
+          "sku": "ZY-BZ-003-BK-40"
+        }
+      ]
+    },
+    {
+      "id": "prod-004",
+      "name": "Pantalon Palazzo Plissé Fluide",
+      "nameAr": "بنطال بالازو بليسيه انسيابي",
+      "slug": "pantalon-palazzo-plisse",
+      "description": "Taille haute élastiquée ultra confortable, plissé permanent raffiné qui allonge la silhouette. Matière aérienne ne froissant jamais, idéale pour voyager ou flâner à Sidi Yahia.",
+      "descriptionAr": "خصر عالي مريح مع ثنيات دائمة أنيقة تمنح قواماً رشيقاً وممشوقاً. قماش خفيف وناعم لا يتجعد أبداً، مناسب للتنقل والإطلالات اليومية.",
+      "price": 6200,
+      "images": [
+        "/images/palazzo_pants_model_1789648513258.jpg"
+      ],
+      "category": "pantalons",
+      "categoryFr": "Pantalons & Ensembles",
+      "categoryAr": "سراويل وأطقم",
+      "collection": "ete-alger",
+      "collectionFr": "Capsule Lin & Soleil",
+      "collectionAr": "تشكيلة الكتان والصيف",
+      "colors": [
+        {
+          "name": "Moka Chaud",
+          "hex": "#5E4839"
+        },
+        {
+          "name": "Beige Nacré",
+          "hex": "#E7DFD5"
+        },
+        {
+          "name": "Noir",
+          "hex": "#151515"
+        }
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L"
+      ],
+      "material": "Crêpe Japonais Infroissable",
+      "materialAr": "كريب ياباني فاخر مقاوم للتجعد",
+      "sku": "ZY-PZ-004",
+      "stock": 18,
+      "isFeatured": false,
+      "isNew": true,
+      "isBestSeller": false,
+      "createdAt": "2026-09-03T16:00:00Z",
+      "variants": [
+        {
+          "id": "v-004-1",
+          "productId": "prod-004",
+          "color": "Moka Chaud",
+          "colorHex": "#5E4839",
+          "size": "S",
+          "stock": 2,
+          "sku": "ZY-PZ-004-MK-S"
+        },
+        {
+          "id": "v-004-2",
+          "productId": "prod-004",
+          "color": "Moka Chaud",
+          "colorHex": "#5E4839",
+          "size": "M",
+          "stock": 3,
+          "sku": "ZY-PZ-004-MK-M"
+        },
+        {
+          "id": "v-004-3",
+          "productId": "prod-004",
+          "color": "Beige Nacré",
+          "colorHex": "#E7DFD5",
+          "size": "S",
+          "stock": 4,
+          "sku": "ZY-PZ-004-BG-S"
+        },
+        {
+          "id": "v-004-4",
+          "productId": "prod-004",
+          "color": "Beige Nacré",
+          "colorHex": "#E7DFD5",
+          "size": "M",
+          "stock": 4,
+          "sku": "ZY-PZ-004-BG-M"
+        },
+        {
+          "id": "v-004-5",
+          "productId": "prod-004",
+          "color": "Noir",
+          "colorHex": "#151515",
+          "size": "S",
+          "stock": 2,
+          "sku": "ZY-PZ-004-BK-S"
+        },
+        {
+          "id": "v-004-6",
+          "productId": "prod-004",
+          "color": "Noir",
+          "colorHex": "#151515",
+          "size": "M",
+          "stock": 3,
+          "sku": "ZY-PZ-004-BK-M"
+        }
+      ]
+    },
+    {
+      "id": "prod-005",
+      "name": "Kimono Abaya Minimaliste en Crêpe de Soie",
+      "nameAr": "عباية كيمونو عصرية من كريب الحرير",
+      "slug": "kimono-abaya-minimaliste",
+      "description": "Coupe épurée inspirée du design contemporain. Manches kimono évasées, finitions invisibles faites à la main, fentes latérales délicates. Se porte aussi bien ouverte sur un jean que ceinturée en soirée.",
+      "descriptionAr": "قصة واسعة انسيابية بأكمام كيمونو رحبة وتشطيب يدوي متقن. يمكن ارتداؤها مفتوحة لمظهر يومي شبابي أو مع حزام للمناسبات.",
+      "price": 9800,
+      "images": [
+        "/images/abaya_kimono_silk_1789648470680.jpg"
+      ],
+      "category": "caftans",
+      "categoryFr": "Caftans & Soirée",
+      "categoryAr": "قفطان وسهرات",
+      "collection": "intemporels",
+      "collectionFr": "Les Intemporels ZAYA",
+      "collectionAr": "التشكيلة الدائمة",
+      "colors": [
+        {
+          "name": "Vert Sauge",
+          "hex": "#77815C"
+        },
+        {
+          "name": "Bleu Nuit",
+          "hex": "#1C2833"
+        },
+        {
+          "name": "Terre Cuite",
+          "hex": "#A0522D"
+        }
+      ],
+      "sizes": [
+        "Standard 1 (155-165cm)",
+        "Standard 2 (165-175cm)"
+      ],
+      "material": "Crêpe Georgette de Soie",
+      "materialAr": "كريب جورجيت حريري فاخر",
+      "sku": "ZY-AB-005",
+      "stock": 4,
+      "isFeatured": true,
+      "isNew": true,
+      "isBestSeller": false,
+      "createdAt": "2026-09-05T09:00:00Z",
+      "variants": [
+        {
+          "id": "v-005-1",
+          "productId": "prod-005",
+          "color": "Vert Sauge",
+          "colorHex": "#77815C",
+          "size": "Standard 1 (155-165cm)",
+          "stock": 1,
+          "sku": "ZY-AB-005-VS-1"
+        },
+        {
+          "id": "v-005-2",
+          "productId": "prod-005",
+          "color": "Vert Sauge",
+          "colorHex": "#77815C",
+          "size": "Standard 2 (165-175cm)",
+          "stock": 1,
+          "sku": "ZY-AB-005-VS-2"
+        },
+        {
+          "id": "v-005-3",
+          "productId": "prod-005",
+          "color": "Bleu Nuit",
+          "colorHex": "#1C2833",
+          "size": "Standard 1 (155-165cm)",
+          "stock": 1,
+          "sku": "ZY-AB-005-BN-1"
+        },
+        {
+          "id": "v-005-4",
+          "productId": "prod-005",
+          "color": "Bleu Nuit",
+          "colorHex": "#1C2833",
+          "size": "Standard 2 (165-175cm)",
+          "stock": 1,
+          "sku": "ZY-AB-005-BN-2"
+        },
+        {
+          "id": "v-005-5",
+          "productId": "prod-005",
+          "color": "Terre Cuite",
+          "colorHex": "#A0522D",
+          "size": "Standard 1 (155-165cm)",
+          "stock": 0,
+          "sku": "ZY-AB-005-TC-1"
+        }
+      ]
+    },
+    {
+      "id": "prod-006",
+      "name": "Sac Besace Cuir Véritable \"Al-Djazair\"",
+      "nameAr": "حقيبة يد جلد طبيعي أصلي صناعة جزائرية",
+      "slug": "sac-besace-cuir-djazair",
+      "description": "Façonné dans un atelier de maroquinerie d’art à Alger. Cuir de vachette pleine fleur au tannage végétal, fermoir mousqueton doré vieilli, bandoulière réglable. Un hommage au savoir-faire local.",
+      "descriptionAr": "صنعت يدوياً في ورشة جلدية عريقة بالجزائر العاصمة. جلد بقري طبيعي 100% مدبوغ بمواد نباتية ومزين بإبزيم ذهبي متين.",
+      "price": 8900,
+      "images": [
+        "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "category": "accessoires",
+      "categoryFr": "Accessoires & Maroquinerie",
+      "categoryAr": "إكسسوارات وحقائب",
+      "collection": "intemporels",
+      "collectionFr": "Les Intemporels ZAYA",
+      "collectionAr": "التشكيلة الدائمة",
+      "colors": [
+        {
+          "name": "Cognac Ambré",
+          "hex": "#9E4714"
+        },
+        {
+          "name": "Noir Ebène",
+          "hex": "#1C1C1C"
+        }
+      ],
+      "sizes": [
+        "Format Unique"
+      ],
+      "material": "100% Cuir Pleine Fleur & Laiton",
+      "materialAr": "100% جلد طبيعي مع نحاس أصلي",
+      "sku": "ZY-BG-006",
+      "stock": 3,
+      "isFeatured": true,
+      "isNew": false,
+      "isBestSeller": true,
+      "createdAt": "2026-08-20T10:00:00Z",
+      "variants": [
+        {
+          "id": "v-006-1",
+          "productId": "prod-006",
+          "color": "Cognac Ambré",
+          "colorHex": "#9E4714",
+          "size": "Format Unique",
+          "stock": 2,
+          "sku": "ZY-BG-006-CG-U"
+        },
+        {
+          "id": "v-006-2",
+          "productId": "prod-006",
+          "color": "Noir Ebène",
+          "colorHex": "#1C1C1C",
+          "size": "Format Unique",
+          "stock": 1,
+          "sku": "ZY-BG-006-BK-U"
+        }
+      ]
+    },
+    {
+      "id": "prod-007",
+      "name": "Robe Longue Satinée Drapée \"Zine\"",
+      "nameAr": "فستان سهرة ستان فاخر مع درابيه",
+      "slug": "robe-longue-satinee-zine",
+      "description": "Élégance sculpturale pour les soirées et célébrations. Décolleté bénitier subtil, drapé asymétrique flatteur et fente latérale mesurée. Confection luxueuse dans un satin soyeux et lumineux.",
+      "descriptionAr": "فستان سهرة ساحر من الستان اللامع بقصة درابيه أنثوية راقية وتفاصيل مميزة، يضفي إطلالة ملكية في الأعراس والمناسبات الكبرى.",
+      "price": 13200,
+      "salePrice": 11900,
+      "images": [
+        "https://images.unsplash.com/photo-1568252542512-9fe8fe9c87bb?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "category": "robes",
+      "categoryFr": "Robes & Ensembles",
+      "categoryAr": "فساتين وأطقم",
+      "collection": "alger-noir",
+      "collectionFr": "Collection Cérémonie & Soir",
+      "collectionAr": "تشكيلة المناسبات والسهرات",
+      "colors": [
+        {
+          "name": "Rouge Brique",
+          "hex": "#8B2500"
+        },
+        {
+          "name": "Champagne Doré",
+          "hex": "#F7E7CE"
+        },
+        {
+          "name": "Vert Forêt",
+          "hex": "#1E4620"
+        }
+      ],
+      "sizes": [
+        "36 (S)",
+        "38 (M)",
+        "40 (L)"
+      ],
+      "material": "Satin Duchesse Soyeux",
+      "materialAr": "ستان دوشيس حريري ناعم",
+      "sku": "ZY-DR-007",
+      "stock": 12,
+      "isFeatured": true,
+      "isNew": true,
+      "isBestSeller": true,
+      "createdAt": "2026-09-06T15:30:00Z",
+      "variants": [
+        {
+          "id": "v-007-1",
+          "productId": "prod-007",
+          "color": "Rouge Brique",
+          "colorHex": "#8B2500",
+          "size": "36 (S)",
+          "stock": 2,
+          "sku": "ZY-DR-007-RB-36"
+        },
+        {
+          "id": "v-007-2",
+          "productId": "prod-007",
+          "color": "Rouge Brique",
+          "colorHex": "#8B2500",
+          "size": "38 (M)",
+          "stock": 3,
+          "sku": "ZY-DR-007-RB-38"
+        },
+        {
+          "id": "v-007-3",
+          "productId": "prod-007",
+          "color": "Champagne Doré",
+          "colorHex": "#F7E7CE",
+          "size": "36 (S)",
+          "stock": 2,
+          "sku": "ZY-DR-007-CH-36"
+        },
+        {
+          "id": "v-007-4",
+          "productId": "prod-007",
+          "color": "Champagne Doré",
+          "colorHex": "#F7E7CE",
+          "size": "38 (M)",
+          "stock": 2,
+          "sku": "ZY-DR-007-CH-38"
+        },
+        {
+          "id": "v-007-5",
+          "productId": "prod-007",
+          "color": "Vert Forêt",
+          "colorHex": "#1E4620",
+          "size": "38 (M)",
+          "stock": 2,
+          "sku": "ZY-DR-007-VF-38"
+        },
+        {
+          "id": "v-007-6",
+          "productId": "prod-007",
+          "color": "Vert Forêt",
+          "colorHex": "#1E4620",
+          "size": "40 (L)",
+          "stock": 1,
+          "sku": "ZY-DR-007-VF-40"
+        }
+      ]
+    },
+    {
+      "id": "prod-008",
+      "name": "Pull Col Montant Maille Fine Côtelée",
+      "nameAr": "كنزة صوفية ناعمة بياقة عالية",
+      "slug": "pull-col-montant-maille",
+      "description": "Tricot fin et chaud, toucher cachemire d’une douceur incomparable. Silhouette ajustée, poignets allongés élégants, idéal sous un trench ou avec notre pantalon palazzo.",
+      "descriptionAr": "كنزة خفيفة ودافئة بملمس الكشمير فائق النعومة، قصة ملائمة للجسم وياقة مرتفعة، تناسب إطلالات العمل والخريف والشتاء.",
+      "price": 5400,
+      "images": [
+        "https://images.unsplash.com/photo-1576871337632-b9aef4c17ab9?q=80&w=1200&auto=format&fit=crop"
+      ],
+      "category": "chemises",
+      "categoryFr": "Chemises & Blouses",
+      "categoryAr": "قمصان وبلوزات",
+      "collection": "intemporels",
+      "collectionFr": "Les Intemporels ZAYA",
+      "collectionAr": "التشكيلة الدائمة",
+      "colors": [
+        {
+          "name": "Caramel Doré",
+          "hex": "#AF6E4D"
+        },
+        {
+          "name": "Crème Écru",
+          "hex": "#FFFDD0"
+        },
+        {
+          "name": "Chocolat Intense",
+          "hex": "#3D2817"
+        }
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L"
+      ],
+      "material": "Laine Mérinos & Modal Toucher Cachemire",
+      "materialAr": "صوف ميرينو ومودال فائق النعومة",
+      "sku": "ZY-SW-008",
+      "stock": 15,
+      "isFeatured": false,
+      "isNew": false,
+      "isBestSeller": true,
+      "createdAt": "2026-08-15T12:00:00Z",
+      "variants": [
+        {
+          "id": "v-008-1",
+          "productId": "prod-008",
+          "color": "Caramel Doré",
+          "colorHex": "#AF6E4D",
+          "size": "S",
+          "stock": 3,
+          "sku": "ZY-SW-008-CR-S"
+        },
+        {
+          "id": "v-008-2",
+          "productId": "prod-008",
+          "color": "Caramel Doré",
+          "colorHex": "#AF6E4D",
+          "size": "M",
+          "stock": 4,
+          "sku": "ZY-SW-008-CR-M"
+        },
+        {
+          "id": "v-008-3",
+          "productId": "prod-008",
+          "color": "Crème Écru",
+          "colorHex": "#FFFDD0",
+          "size": "S",
+          "stock": 3,
+          "sku": "ZY-SW-008-EC-S"
+        },
+        {
+          "id": "v-008-4",
+          "productId": "prod-008",
+          "color": "Crème Écru",
+          "colorHex": "#FFFDD0",
+          "size": "M",
+          "stock": 3,
+          "sku": "ZY-SW-008-EC-M"
+        },
+        {
+          "id": "v-008-5",
+          "productId": "prod-008",
+          "color": "Chocolat Intense",
+          "colorHex": "#3D2817",
+          "size": "M",
+          "stock": 2,
+          "sku": "ZY-SW-008-CH-M"
+        }
+      ]
+    }
+  ],
+  "orders": [
+    {
+      "id": "DZ-2609-1024",
+      "customerName": "Sarah Benali",
+      "phone": "0550123456",
+      "wilayaCode": 16,
+      "wilayaName": "Alger",
+      "commune": "Hydra",
+      "address": "Résidence Les Pins, Apt 14, Sidi Yahia",
+      "deliveryMethod": "home",
+      "deliveryFee": 400,
+      "subtotal": 19700,
+      "discount": 1000,
+      "discountCode": "SAHRA1000",
+      "total": 19100,
+      "status": "preparing",
+      "paymentMethod": "COD",
+      "customerNotes": "Veuillez appeler avant de livrer s’il vous plaît (après 16h)",
+      "internalNotes": "Cliente fidèle. Emballage cadeau ZAYA demandé.",
+      "createdAt": "2026-09-10T14:22:00Z",
+      "items": [
+        {
+          "productId": "prod-002",
+          "variantId": "v-002-1",
+          "productName": "Caftan Moderne Ceinture Métallique",
+          "color": "Émeraude Royal",
+          "size": "38 (S/M)",
+          "quantity": 1,
+          "unitPrice": 14800,
+          "total": 14800,
+          "image": "/images/modern_caftan_dress_1789648482081.jpg"
+        },
+        {
+          "productId": "prod-001",
+          "variantId": "v-001-2",
+          "productName": "Chemise Oversize en Pur Lin",
+          "color": "Noir",
+          "size": "M",
+          "quantity": 1,
+          "unitPrice": 4900,
+          "total": 4900,
+          "image": "/images/linen_oversize_shirt_1789648499860.jpg"
+        }
+      ],
+      "timeline": [
+        {
+          "status": "pending",
+          "timestamp": "2026-09-10T14:22:00Z",
+          "note": "Commande reçue sur le site"
+        },
+        {
+          "status": "confirmed",
+          "timestamp": "2026-09-10T14:45:00Z",
+          "note": "Confirmée par téléphone avec la cliente"
+        },
+        {
+          "status": "preparing",
+          "timestamp": "2026-09-10T16:00:00Z",
+          "note": "Préparation du colis à l’atelier"
+        }
+      ]
+    },
+    {
+      "id": "DZ-2609-1023",
+      "customerName": "Amina Mansouri",
+      "phone": "0661987654",
+      "wilayaCode": 31,
+      "wilayaName": "Oran",
+      "commune": "Bir El Djir",
+      "address": "Boulevard Millenium, Bureau Yalidine Express",
+      "deliveryMethod": "desk",
+      "deliveryFee": 400,
+      "subtotal": 11500,
+      "discount": 0,
+      "total": 11900,
+      "status": "shipped",
+      "paymentMethod": "COD",
+      "customerNotes": "Livraison au bureau Yalidine Millenium Oran",
+      "internalNotes": "Bordereau Yalidine #YAL-8839201 généré",
+      "createdAt": "2026-09-09T18:10:00Z",
+      "items": [
+        {
+          "productId": "prod-003",
+          "variantId": "v-003-2",
+          "productName": "Blazer Croisé Laine Structuré \"El Casbah\"",
+          "color": "Taupe Cendré",
+          "size": "38",
+          "quantity": 1,
+          "unitPrice": 11500,
+          "total": 11500,
+          "image": "/images/wool_blazer_charcoal_1789648529813.jpg"
+        }
+      ],
+      "timeline": [
+        {
+          "status": "pending",
+          "timestamp": "2026-09-09T18:10:00Z",
+          "note": "Commande passée"
+        },
+        {
+          "status": "confirmed",
+          "timestamp": "2026-09-09T19:00:00Z",
+          "note": "Confirmation automatique WhatsApp"
+        },
+        {
+          "status": "preparing",
+          "timestamp": "2026-09-10T09:30:00Z",
+          "note": "Emballage terminé"
+        },
+        {
+          "status": "shipped",
+          "timestamp": "2026-09-10T11:00:00Z",
+          "note": "Remis au transporteur Yalidine"
+        }
+      ]
+    },
+    {
+      "id": "DZ-2609-1022",
+      "customerName": "Meriem Haddad",
+      "phone": "0770554433",
+      "wilayaCode": 25,
+      "wilayaName": "Constantine",
+      "commune": "Ali Mendjeli",
+      "address": "UV 05, Bâtiment C12, Porte 4",
+      "deliveryMethod": "home",
+      "deliveryFee": 650,
+      "subtotal": 6200,
+      "discount": 0,
+      "total": 6850,
+      "status": "delivered",
+      "paymentMethod": "COD",
+      "customerNotes": "Sonnez à l’interphone Haddad",
+      "internalNotes": "Paiement en espèces 6850 DA encaissé par le livreur",
+      "createdAt": "2026-09-07T11:30:00Z",
+      "items": [
+        {
+          "productId": "prod-004",
+          "variantId": "v-004-3",
+          "productName": "Pantalon Palazzo Plissé Fluide",
+          "color": "Beige Nacré",
+          "size": "S",
+          "quantity": 1,
+          "unitPrice": 6200,
+          "total": 6200,
+          "image": "/images/palazzo_pants_model_1789648513258.jpg"
+        }
+      ],
+      "timeline": [
+        {
+          "status": "pending",
+          "timestamp": "2026-09-07T11:30:00Z"
+        },
+        {
+          "status": "confirmed",
+          "timestamp": "2026-09-07T12:00:00Z"
+        },
+        {
+          "status": "preparing",
+          "timestamp": "2026-09-07T15:00:00Z"
+        },
+        {
+          "status": "shipped",
+          "timestamp": "2026-09-08T08:30:00Z"
+        },
+        {
+          "status": "out_for_delivery",
+          "timestamp": "2026-09-09T09:00:00Z"
+        },
+        {
+          "status": "delivered",
+          "timestamp": "2026-09-09T13:45:00Z",
+          "note": "Colis remis en main propre"
+        }
+      ]
+    },
+    {
+      "id": "DZ-2609-1021",
+      "customerName": "Yassine Boudiaf",
+      "phone": "0555882211",
+      "wilayaCode": 9,
+      "wilayaName": "Blida",
+      "commune": "Boufarik",
+      "address": "Cité 500 Logements, Bloc 12",
+      "deliveryMethod": "home",
+      "deliveryFee": 500,
+      "subtotal": 8900,
+      "discount": 890,
+      "discountCode": "BIENVENUE10",
+      "total": 8510,
+      "status": "delivered",
+      "paymentMethod": "COD",
+      "customerNotes": "Cadeau pour mon épouse",
+      "internalNotes": "Succès - cliente très satisfaite, avis 5 étoiles sur Instagram",
+      "createdAt": "2026-09-06T09:15:00Z",
+      "items": [
+        {
+          "productId": "prod-006",
+          "variantId": "v-006-1",
+          "productName": "Sac Besace Cuir Véritable \"Al-Djazair\"",
+          "color": "Cognac Ambré",
+          "size": "Format Unique",
+          "quantity": 1,
+          "unitPrice": 8900,
+          "total": 8900,
+          "image": "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?q=80&w=300&auto=format&fit=crop"
+        }
+      ],
+      "timeline": [
+        {
+          "status": "pending",
+          "timestamp": "2026-09-06T09:15:00Z"
+        },
+        {
+          "status": "confirmed",
+          "timestamp": "2026-09-06T09:40:00Z"
+        },
+        {
+          "status": "preparing",
+          "timestamp": "2026-09-06T11:00:00Z"
+        },
+        {
+          "status": "shipped",
+          "timestamp": "2026-09-06T14:30:00Z"
+        },
+        {
+          "status": "delivered",
+          "timestamp": "2026-09-07T11:20:00Z"
+        }
+      ]
+    },
+    {
+      "id": "DZ-2609-1020",
+      "customerName": "Lyna Cherif",
+      "phone": "0670112233",
+      "wilayaCode": 19,
+      "wilayaName": "Sétif",
+      "commune": "Sétif",
+      "address": "Quartier Bel-Air, Rue 1er Novembre",
+      "deliveryMethod": "home",
+      "deliveryFee": 700,
+      "subtotal": 13200,
+      "discount": 0,
+      "total": 13900,
+      "status": "pending",
+      "paymentMethod": "COD",
+      "customerNotes": "Merci de vérifier si la taille 38 correspond bien à un 38 français",
+      "internalNotes": "À appeler pour confirmation de taille avant expédition",
+      "createdAt": "2026-09-11T08:45:00Z",
+      "items": [
+        {
+          "productId": "prod-007",
+          "variantId": "v-007-2",
+          "productName": "Robe Longue Satinée Drapée \"Zine\"",
+          "color": "Rouge Brique",
+          "size": "38 (M)",
+          "quantity": 1,
+          "unitPrice": 13200,
+          "total": 13200,
+          "image": "https://images.unsplash.com/photo-1568252542512-9fe8fe9c87bb?q=80&w=300&auto=format&fit=crop"
+        }
+      ],
+      "timeline": [
+        {
+          "status": "pending",
+          "timestamp": "2026-09-11T08:45:00Z",
+          "note": "Nouvelle commande COD en attente de confirmation"
+        }
+      ]
+    }
+  ],
+  "customers": [
+    {
+      "id": "cust-01",
+      "name": "Sarah Benali",
+      "phone": "0550123456",
+      "wilaya": "Alger (16)",
+      "commune": "Hydra",
+      "totalOrders": 4,
+      "totalSpent": 48500,
+      "lastOrderDate": "2026-09-10",
+      "status": "vip"
+    },
+    {
+      "id": "cust-02",
+      "name": "Amina Mansouri",
+      "phone": "0661987654",
+      "wilaya": "Oran (31)",
+      "commune": "Bir El Djir",
+      "totalOrders": 2,
+      "totalSpent": 24300,
+      "lastOrderDate": "2026-09-09",
+      "status": "regular"
+    },
+    {
+      "id": "cust-03",
+      "name": "Meriem Haddad",
+      "phone": "0770554433",
+      "wilaya": "Constantine (25)",
+      "commune": "Ali Mendjeli",
+      "totalOrders": 1,
+      "totalSpent": 6850,
+      "lastOrderDate": "2026-09-07",
+      "status": "new"
+    },
+    {
+      "id": "cust-04",
+      "name": "Yassine Boudiaf",
+      "phone": "0555882211",
+      "wilaya": "Blida (09)",
+      "commune": "Boufarik",
+      "totalOrders": 3,
+      "totalSpent": 27900,
+      "lastOrderDate": "2026-09-06",
+      "status": "regular"
+    },
+    {
+      "id": "cust-05",
+      "name": "Lyna Cherif",
+      "phone": "0670112233",
+      "wilaya": "Sétif (19)",
+      "commune": "Sétif",
+      "totalOrders": 1,
+      "totalSpent": 13900,
+      "lastOrderDate": "2026-09-11",
+      "status": "new"
+    }
+  ],
+  "users": [
+    {
+      "id": "user-admin",
+      "name": "Direction ZAYA Atelier",
+      "email": "admin@zaya.dz",
+      "phone": "0550000000",
+      "wilayaCode": 16,
+      "wilayaName": "Alger",
+      "commune": "Hydra",
+      "address": "Boulevard du 11 Décembre, Val d'Hydra, Alger",
+      "deliveryMethod": "home",
+      "role": "admin",
+      "loyaltyTier": "VIP Atelier",
+      "createdAt": "2026-01-01T00:00:00Z",
+      "passwordHash": "53f27d9134f9bf1d14719239aa8ecd4d:951c04ad8c0841b6249b521d96846053ad6bbb1257fdc2359cd7f3daa59df7713d6cedf4975bcfdc0a9a0d195c55dbb0b7636e003c3ec485eedbf098f4586937"
+    },
+    {
+      "id": "user-001",
+      "name": "Sarah Benali",
+      "email": "sarah@zaya.dz",
+      "phone": "0550123456",
+      "wilayaCode": 16,
+      "wilayaName": "Alger",
+      "commune": "Hydra",
+      "address": "Résidence Les Pins, Apt 14, Sidi Yahia",
+      "deliveryMethod": "home",
+      "role": "customer",
+      "loyaltyTier": "VIP Atelier",
+      "createdAt": "2026-01-15T10:00:00Z",
+      "passwordHash": "233d36d636e454b2453d99ecdf30a149:561dc3da403ec54e188793fc00dd597fc69ed627d3722f1cffcd15ef3c7bb47cb23fa3d365c9bc7baf74a0f344f3920ccc528c98100f6f6b78d9afef75e56523"
+    },
+    {
+      "id": "user-002",
+      "name": "Amélia Ziani",
+      "email": "amelia@zaya.dz",
+      "phone": "0555123987",
+      "wilayaCode": 16,
+      "wilayaName": "Alger",
+      "commune": "El Biar",
+      "address": "Boulevard Bougara, Villa 12",
+      "deliveryMethod": "home",
+      "role": "customer",
+      "loyaltyTier": "Privilège",
+      "createdAt": "2026-02-20T14:30:00Z",
+      "passwordHash": "0c289c27529636f19964ff56741afb6c:40d30405ca864ca0fcd8177ba02644448030433571c92f90be8f3a22a498055a016ca26b3aeeddf7a3b73cc12230097e6e34ae73504bddd7ad5436524d67cf1b"
+    }
+  ],
+  "discounts": [
+    {
+      "id": "disc-01",
+      "code": "BIENVENUE10",
+      "type": "percentage",
+      "value": 10,
+      "minOrder": 4000,
+      "active": true,
+      "usedCount": 14
+    },
+    {
+      "id": "disc-02",
+      "code": "SAHRA1000",
+      "type": "fixed",
+      "value": 1000,
+      "minOrder": 10000,
+      "active": true,
+      "usedCount": 8
+    },
+    {
+      "id": "disc-03",
+      "code": "LIVRAISON_ALGER",
+      "type": "fixed",
+      "value": 400,
+      "minOrder": 8000,
+      "active": true,
+      "usedCount": 22
+    }
+  ],
+  "movements": [
+    {
+      "id": "mov-01",
+      "productId": "prod-002",
+      "variantId": "v-002-1",
+      "productName": "Caftan Moderne Ceinture",
+      "variantLabel": "Émeraude Royal / 38 (S/M)",
+      "change": -1,
+      "newStock": 2,
+      "reason": "order",
+      "referenceId": "DZ-2609-1024",
+      "timestamp": "2026-09-10T14:22:00Z"
+    },
+    {
+      "id": "mov-02",
+      "productId": "prod-001",
+      "variantId": "v-001-2",
+      "productName": "Chemise Oversize Lin",
+      "variantLabel": "Noir / M",
+      "change": -1,
+      "newStock": 4,
+      "reason": "order",
+      "referenceId": "DZ-2609-1024",
+      "timestamp": "2026-09-10T14:22:00Z"
+    },
+    {
+      "id": "mov-03",
+      "productId": "prod-003",
+      "variantId": "v-003-2",
+      "productName": "Blazer Croisé Laine",
+      "variantLabel": "Taupe Cendré / 38",
+      "change": -1,
+      "newStock": 3,
+      "reason": "order",
+      "referenceId": "DZ-2609-1023",
+      "timestamp": "2026-09-09T18:10:00Z"
+    },
+    {
+      "id": "mov-04",
+      "productId": "prod-001",
+      "variantId": "v-001-5",
+      "productName": "Chemise Oversize Lin",
+      "variantLabel": "Blanc Pur / M",
+      "change": 5,
+      "newStock": 5,
+      "reason": "restock",
+      "referenceId": "RECEPTION-ATELIER-04",
+      "timestamp": "2026-09-08T11:00:00Z"
+    }
+  ],
+  "reviews": [
+    {
+      "id": "rev-1790157723559-jsv0",
+      "productId": "prod-001",
+      "userId": "user-001",
+      "userName": "Sarah Benali",
+      "userWilaya": "Alger (Hydra)",
+      "rating": 5,
+      "title": "Parfait pour les journées chaudes à Alger",
+      "comment": "Superbe coupe oversize, le tissu est frais et très agréable à porter.",
+      "fitFeedback": "true_to_size",
+      "verifiedPurchase": true,
+      "createdAt": "2026-09-23T10:02:03.560Z"
+    },
+    {
+      "id": "rev-001",
+      "productId": "prod-002",
+      "userId": "user-001",
+      "userName": "Sarah Benali",
+      "userWilaya": "Alger (Hydra)",
+      "rating": 5,
+      "title": "Une merveille absolue, coupe impériale",
+      "comment": "Reçu en 24h à Hydra avec essayage à la livraison. Le tombé du crêpe émeraude est sublime et la ceinture dorée donne une prestance incroyable. Parfait pour le mariage de ma sœur !",
+      "fitFeedback": "true_to_size",
+      "verifiedPurchase": true,
+      "createdAt": "2026-09-12T16:30:00Z"
+    },
+    {
+      "id": "rev-002",
+      "productId": "prod-001",
+      "userId": "user-002",
+      "userName": "Amélia Ziani",
+      "userWilaya": "Alger (El Biar)",
+      "rating": 5,
+      "title": "Qualité du lin irréprochable",
+      "comment": "Le lin est doux, respirant et ne se froisse pas de façon négligée. Coupe oversize moderne très flatteuse. Le livreur était très courtois et ponctuel.",
+      "fitFeedback": "true_to_size",
+      "verifiedPurchase": true,
+      "createdAt": "2026-09-14T11:15:00Z"
+    },
+    {
+      "id": "rev-003",
+      "productId": "prod-003",
+      "userId": "user-001",
+      "userName": "Sarah Benali",
+      "userWilaya": "Alger (Hydra)",
+      "rating": 5,
+      "title": "Élégance et modestie réunies",
+      "comment": "Couleur terracotta chaleureuse et tissu très fluide qui ne colle pas. Idéal pour les dîners élégants. Bravo à l’atelier pour cette confection soignée.",
+      "fitFeedback": "true_to_size",
+      "verifiedPurchase": true,
+      "createdAt": "2026-09-15T18:40:00Z"
+    }
+  ],
+  "version": 1,
+  "lastUpdated": "2026-09-23T10:02:03.560Z"
+}

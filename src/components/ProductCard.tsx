@@ -141,8 +141,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       {/* Product Information */}
       <div className="pt-3 pb-2 flex flex-col gap-1 text-left">
         {/* Category & Collection */}
-        <div className="text-[11px] uppercase tracking-wider text-[#8C8275]">
-          {language === 'ar' ? product.categoryAr : product.categoryFr}
+        <div className="flex items-center justify-between text-[11px] uppercase tracking-wider text-[#8C8275]">
+          <span>{language === 'ar' ? product.categoryAr : product.categoryFr}</span>
+          {product.reviewCount !== undefined && product.reviewCount > 0 && (
+            <span className="flex items-center gap-0.5 text-amber-600 font-medium font-sans">
+              <span className="text-amber-500">★</span>
+              <span>{(product.rating || 5.0).toFixed(1)}</span>
+              <span className="text-stone-400 text-[10px]">({product.reviewCount})</span>
+            </span>
+          )}
         </div>
 
         {/* Title */}

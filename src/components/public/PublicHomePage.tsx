@@ -18,7 +18,9 @@ import {
   MapPin,
   MessageCircle,
   RefreshCw,
-  Award
+  Award,
+  Hash,
+  Search
 } from 'lucide-react';
 
 interface PublicHomePageProps {
@@ -28,6 +30,7 @@ interface PublicHomePageProps {
   onSelectProduct: (product: Product) => void;
   wishlist: string[];
   onToggleWishlist: (product: Product) => void;
+  onOpenTracking?: (orderId?: string, phone?: string) => void;
 }
 
 export const PublicHomePage: React.FC<PublicHomePageProps> = ({
@@ -37,9 +40,12 @@ export const PublicHomePage: React.FC<PublicHomePageProps> = ({
   onSelectProduct,
   wishlist,
   onToggleWishlist,
+  onOpenTracking,
 }) => {
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSuccess, setNewsletterSuccess] = useState(false);
+  const [checkerOrderId, setCheckerOrderId] = useState('');
+  const [checkerPhone, setCheckerPhone] = useState('');
 
   // Curate 4 featured signature pieces
   const featuredProducts = products.filter(p => p.isFeatured || p.isBestSeller).slice(0, 4);
@@ -50,6 +56,14 @@ export const PublicHomePage: React.FC<PublicHomePageProps> = ({
     setNewsletterSuccess(true);
     setNewsletterEmail('');
     setTimeout(() => setNewsletterSuccess(false), 5000);
+  };
+
+  const handleHomeTrackingSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!checkerOrderId.trim()) return;
+    if (onOpenTracking) {
+      onOpenTracking(checkerOrderId.trim(), checkerPhone.trim());
+    }
   };
 
   return (
@@ -130,6 +144,122 @@ export const PublicHomePage: React.FC<PublicHomePageProps> = ({
                 <p className="text-[11px] text-[#736B60]">Matières nobles & finitions soignées</p>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 2. PUBLIC ORDER STATUS CHECKER (No login required - Order ID + Phone) */}
+      {/* ========================================================================= */}
+      <section className="py-12 sm:py-16 bg-[#F8F5F0] border-b border-[#EAE4DC]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+          <div className="bg-white border border-[#E0D8CB] p-6 sm:p-9 rounded-xs shadow-xs text-left">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-[#EAE4DC]">
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-2 text-[#8C6B3F] text-[11px] font-semibold uppercase tracking-[0.22em]">
+                  <Truck className="w-3.5 h-3.5 text-[#C5A880]" />
+                  <span>{language === 'ar' ? 'تتبع فوري بدون تسجيل دخول' : 'Suivi Express Sans Connexion'}</span>
+                </div>
+                <h2 className="font-serif-luxury text-2xl sm:text-3xl font-light text-[#1A1918]">
+                  {language === 'ar' ? 'أين وصلت طلبيتك من دار زايا؟' : 'Vérifier le Statut de Votre Commande'}
+                </h2>
+                <p className="text-xs text-[#736B60] max-w-xl leading-relaxed">
+                  {language === 'ar'
+                    ? 'أدخل رقم طلبك ورقم هاتفك للاطلاع المباشر على حالة التحضير والشحن في الـ 58 ولاية دون الحاجة لتسجيل الدخول.'
+                    : 'Suivez l’acheminement de votre colis en temps réel à l’aide de votre référence et de votre numéro de téléphone, sans avoir besoin de créer ou d’ouvrir un compte.'}
+                </p>
+              </div>
+
+              <div className="hidden sm:flex items-center gap-2 text-[11px] text-stone-600 bg-[#FAF8F5] px-3.5 py-2.5 border border-[#E8E1D5] rounded-xs shrink-0">
+                <ShieldCheck className="w-4 h-4 text-[#C5A880]" />
+                <div className="text-left">
+                  <div className="font-semibold text-stone-800">58 Wilayas</div>
+                  <div className="text-[10px] text-stone-500">Stop-desk & Domicile</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Checker Form */}
+            <form onSubmit={handleHomeTrackingSubmit} className="mt-6 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Order ID Input */}
+                <div>
+                  <label className="block text-[11px] font-semibold uppercase tracking-wider text-stone-700 mb-1.5">
+                    {language === 'ar' ? 'رقم الطلب' : 'Référence de Commande'} <span className="text-[#8C6B3F]">*</span>
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400">
+                      <Hash className="w-4 h-4" />
+                    </div>
+                    <input
+                      type="text"
+                      required
+                      value={checkerOrderId}
+                      onChange={(e) => setCheckerOrderId(e.target.value.toUpperCase())}
+                      placeholder="Ex: DZ-2609-1024"
+                      className="w-full pl-10 pr-3.5 py-3 bg-[#FAF8F5] border border-stone-300 text-xs font-mono uppercase text-stone-900 focus:outline-none focus:border-[#C5A880] focus:bg-white rounded-xs shadow-2xs transition-all"
+                    />
+                  </div>
+                </div>
+
+                {/* Phone Input */}
+                <div>
+                  <label className="block text-[11px] font-semibold uppercase tracking-wider text-stone-700 mb-1.5">
+                    {language === 'ar' ? 'رقم الهاتف' : 'Numéro de Téléphone'} <span className="text-[#8C6B3F]">*</span>
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400">
+                      <Phone className="w-4 h-4" />
+                    </div>
+                    <input
+                      type="tel"
+                      required
+                      value={checkerPhone}
+                      onChange={(e) => setCheckerPhone(e.target.value)}
+                      placeholder="Ex: 0550 12 34 56"
+                      className="w-full pl-10 pr-3.5 py-3 bg-[#FAF8F5] border border-stone-300 text-xs font-mono text-stone-900 focus:outline-none focus:border-[#C5A880] focus:bg-white rounded-xs shadow-2xs transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
+                {/* 1-click test examples */}
+                <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-stone-500">
+                  <span className="font-semibold text-stone-700">Exemples rapides :</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCheckerOrderId('DZ-2609-1024');
+                      setCheckerPhone('0550 12 34 56');
+                      onOpenTracking?.('DZ-2609-1024', '0550 12 34 56');
+                    }}
+                    className="px-2.5 py-1 bg-[#FAF8F5] border border-stone-300 hover:border-[#C5A880] hover:text-[#8C6B3F] font-mono text-[11px] text-stone-700 rounded-xs transition-colors cursor-pointer"
+                  >
+                    DZ-2609-1024 (Alger)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCheckerOrderId('DZ-2609-1023');
+                      setCheckerPhone('0661 98 76 54');
+                      onOpenTracking?.('DZ-2609-1023', '0661 98 76 54');
+                    }}
+                    className="px-2.5 py-1 bg-[#FAF8F5] border border-stone-300 hover:border-[#C5A880] hover:text-[#8C6B3F] font-mono text-[11px] text-stone-700 rounded-xs transition-colors cursor-pointer"
+                  >
+                    DZ-2609-1023 (Oran)
+                  </button>
+                </div>
+
+                <button
+                  type="submit"
+                  className="px-8 py-3.5 bg-[#1A1918] text-[#FAF8F5] text-xs font-semibold uppercase tracking-[0.18em] hover:bg-black transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs rounded-xs shrink-0"
+                >
+                  <Search className="w-3.5 h-3.5 text-[#C5A880]" />
+                  <span>{language === 'ar' ? 'تتبع الشحنة الآن' : 'Suivre mon Colis'}</span>
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </section>
@@ -315,8 +445,11 @@ export const PublicHomePage: React.FC<PublicHomePageProps> = ({
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => onNavigate('/dashboard/orders')} className="hover:text-white transition-colors">
-                    Suivi de Commande
+                  <button
+                    onClick={() => onOpenTracking ? onOpenTracking() : onNavigate('/dashboard/orders')}
+                    className="hover:text-white transition-colors cursor-pointer"
+                  >
+                    Suivi de Commande Sans Connexion
                   </button>
                 </li>
               </ul>

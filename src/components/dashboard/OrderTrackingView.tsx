@@ -19,12 +19,14 @@ import {
   ArrowRight,
   Sparkles,
   ChevronRight,
-  ExternalLink
+  ExternalLink,
+  Printer
 } from 'lucide-react';
 import { Order, OrderStatus, Language } from '../../types';
 import { AppRoute } from '../../lib/router';
 import { formatDA, buildWhatsAppLink, BOUTIQUE_PHONE } from '../../lib/i18n';
 import { ALGERIAN_WILAYAS } from '../../data/wilayas';
+import { OrderInvoiceModal } from './OrderInvoiceModal';
 
 interface OrderTrackingViewProps {
   initialOrderId?: string;
@@ -44,6 +46,7 @@ export const OrderTrackingView: React.FC<OrderTrackingViewProps> = ({
   const [order, setOrder] = useState<Order | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
+  const [showInvoice, setShowInvoice] = useState<boolean>(false);
 
   // 6 Stepper stages tailored for 58 Wilayas Algerian delivery
   const steps: {
@@ -199,6 +202,14 @@ export const OrderTrackingView: React.FC<OrderTrackingViewProps> = ({
 
         {order && (
           <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => setShowInvoice(true)}
+              className="px-3.5 py-2 bg-stone-100 hover:bg-stone-200 border border-stone-300 text-stone-800 text-xs font-semibold rounded-xl transition-colors flex items-center gap-1.5 shadow-2xs cursor-pointer"
+              title="Générer et imprimer la facture officielle d'achat"
+            >
+              <Printer className="w-3.5 h-3.5 text-stone-700" />
+              <span>Imprimer Facture</span>
+            </button>
             <button
               onClick={handleRefresh}
               disabled={loading}
@@ -727,6 +738,13 @@ export const OrderTrackingView: React.FC<OrderTrackingViewProps> = ({
           </div>
         </div>
       )}
+
+      {/* Printable Invoice Modal */}
+      <OrderInvoiceModal
+        order={showInvoice ? order : null}
+        language={language}
+        onClose={() => setShowInvoice(false)}
+      />
     </div>
   );
 };

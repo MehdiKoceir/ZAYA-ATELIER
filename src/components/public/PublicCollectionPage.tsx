@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Product, Language } from '../../types';
 import { AppRoute } from '../../lib/router';
 import { ProductCard } from '../ProductCard';
-import { Search, ArrowUpDown, SlidersHorizontal } from 'lucide-react';
+import { Search, ArrowUpDown, Tag, Sparkles } from 'lucide-react';
+import { COLLECTION_CATEGORIES_SEO } from '../../lib/seo';
 
 interface PublicCollectionPageProps {
   products: Product[];
   language: Language;
-  onNavigate: (route: AppRoute) => void;
+  onNavigate: (route: AppRoute | string) => void;
   onSelectProduct: (product: Product) => void;
   wishlist: string[];
   onToggleWishlist: (product: Product) => void;
+  currentCategory?: string;
+  onCategoryChange?: (categoryId: string) => void;
 }
 
 export const PublicCollectionPage: React.FC<PublicCollectionPageProps> = ({
@@ -20,10 +23,18 @@ export const PublicCollectionPage: React.FC<PublicCollectionPageProps> = ({
   onSelectProduct,
   wishlist,
   onToggleWishlist,
+  currentCategory = 'all',
+  onCategoryChange
 }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>(currentCategory || 'all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<'newest' | 'price_asc' | 'price_desc'>('newest');
+
+  useEffect(() => {
+    if (currentCategory && currentCategory !== selectedCategory) {
+      setSelectedCategory(currentCategory);
+    }
+  }, [currentCategory]);
 
   const categories = [
     { id: 'all', fr: 'Tous les Modèles', ar: 'جميع الموديلات' },
@@ -35,6 +46,15 @@ export const PublicCollectionPage: React.FC<PublicCollectionPageProps> = ({
     { id: 'accessoires', fr: 'Maroquinerie', ar: 'حقائب جلدية' }
   ];
 
+  const handleCategorySelect = (catId: string) => {
+    setSelectedCategory(catId);
+    if (onCategoryChange) {
+      onCategoryChange(catId);
+    }
+  };
+
+  const activeCategorySEO = COLLECTION_CATEGORIES_SEO[selectedCategory] || COLLECTION_CATEGORIES_SEO.all;
+
   // Filtering
   const filteredProducts = products.filter((p) => {
     const matchesCat = selectedCategory === 'all' || p.category === selectedCategory;
@@ -42,7 +62,7 @@ export const PublicCollectionPage: React.FC<PublicCollectionPageProps> = ({
     const matchesSearch =
       !query ||
       p.name.toLowerCase().includes(query) ||
-      p.nameAr.toLowerCase().includes(query) ||
+      p.nameAr?.toLowerCase().includes(query) ||
       p.description.toLowerCase().includes(query) ||
       p.material.toLowerCase().includes(query);
     return matchesCat && matchesSearch;
@@ -60,17 +80,26 @@ export const PublicCollectionPage: React.FC<PublicCollectionPageProps> = ({
   return (
     <div className="bg-[#FAF8F5] min-h-screen py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        {/* Header Title */}
-        <div className="text-center max-w-2xl mx-auto mb-10 space-y-3">
-          <span className="text-[11px] uppercase tracking-[0.24em] text-[#8C8275] font-semibold">
-            Catalogue ZAYA
-          </span>
+        {/* Header Title with Dynamic SEO Context */}
+        <div className="text-center max-w-3xl mx-auto mb-10 space-y-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#F4EFEA] border border-[#E5DDD0] rounded-full text-[11px] uppercase tracking-[0.24em] text-[#8C8275] font-semibold">
+            <Sparkles className="w-3 h-3 text-[#C5A880]" />
+            <span>
+              {language === 'ar' ? activeCategorySEO.nameAr : activeCategorySEO.nameFr}
+            </span>
+          </div>
+
           <h1 className="font-serif-luxury text-3xl sm:text-5xl font-light text-[#1A1918]">
-            La Collection Intemporelle
+            {language === 'ar' ? activeCategorySEO.titleAr : activeCategorySEO.titleFr}
           </h1>
-          <p className="text-xs sm:text-sm text-[#736B60]">
-            Pièces taillées dans les plus belles matières pour une allure algérienne contemporaine.
+
+          <p className="text-xs sm:text-sm text-[#736B60] leading-relaxed">
+            {language === 'ar' ? activeCategorySEO.descriptionAr : activeCategorySEO.descriptionFr}
           </p>
+
+          <div className="pt-1 text-[11px] text-[#A69D91] font-medium">
+            {filteredProducts.length} {filteredProducts.length > 1 ? 'modèles disponibles' : 'modèle disponible'} • Livraison express 58 Wilayas
+          </div>
         </div>
 
         {/* Filters and Controls */}
@@ -105,19 +134,29 @@ export const PublicCollectionPage: React.FC<PublicCollectionPageProps> = ({
 
           {/* Category Tabs */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`px-4 py-2 text-xs uppercase tracking-wider font-semibold whitespace-nowrap transition-all rounded-lg cursor-pointer ${
-                  selectedCategory === cat.id
-                    ? 'bg-[#1A1918] text-[#FAF8F5] shadow-xs'
-                    : 'bg-[#EFE9DF] text-[#524B43] hover:bg-[#E5DDD0]'
-                }`}
-              >
-                {language === 'ar' ? cat.ar : cat.fr}
-              </button>
-            ))}
+            {categories.map((cat) => {
+              const count = cat.id === 'all' 
+                ? products.length 
+                : products.filter(p => p.category === cat.id).length;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => handleCategorySelect(cat.id)}
+                  className={`px-4 py-2 text-xs uppercase tracking-wider font-semibold whitespace-nowrap transition-all rounded-lg cursor-pointer flex items-center gap-1.5 ${
+                    selectedCategory === cat.id
+                      ? 'bg-[#1A1918] text-[#FAF8F5] shadow-xs'
+                      : 'bg-[#EFE9DF] text-[#524B43] hover:bg-[#E5DDD0]'
+                  }`}
+                >
+                  <span>{language === 'ar' ? cat.ar : cat.fr}</span>
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                    selectedCategory === cat.id ? 'bg-[#33302C] text-[#C5A880]' : 'bg-[#E4DCD0] text-[#736B60]'
+                  }`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -132,10 +171,10 @@ export const PublicCollectionPage: React.FC<PublicCollectionPageProps> = ({
             </p>
             <button
               onClick={() => {
-                setSelectedCategory('all');
+                handleCategorySelect('all');
                 setSearchQuery('');
               }}
-              className="mt-2 px-5 py-2.5 bg-[#1A1918] text-white text-xs uppercase font-semibold tracking-wider rounded-lg"
+              className="mt-2 px-5 py-2.5 bg-[#1A1918] text-white text-xs uppercase font-semibold tracking-wider rounded-lg cursor-pointer"
             >
               Réinitialiser les filtres
             </button>

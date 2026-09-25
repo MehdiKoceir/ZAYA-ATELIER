@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Product, ProductVariant, CartItem, Language, Order } from './types';
 import { useAppRouter, AppRoute } from './lib/router';
 import { useAuth } from './context/AuthContext';
+import { useSEO } from './hooks/useSEO';
 
 // Public Components
 import { PublicNavbar } from './components/public/PublicNavbar';
@@ -26,7 +27,7 @@ import { AdminDashboard } from './components/AdminDashboard';
 import { translations } from './lib/i18n';
 
 export default function App() {
-  const { currentRoute, navigate } = useAppRouter();
+  const { currentRoute, queryParams, navigate, setQueryParam } = useAppRouter();
   const { user, token, loading: authLoading } = useAuth();
 
   // Language & Admin State
@@ -44,6 +45,22 @@ export default function App() {
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState<boolean>(false);
   const [isTrackingOpen, setIsTrackingOpen] = useState<boolean>(false);
+  const [trackingInitialOrderId, setTrackingInitialOrderId] = useState<string>('');
+  const [trackingInitialPhone, setTrackingInitialPhone] = useState<string>('');
+
+  const handleOpenTracking = (orderId?: string, phone?: string) => {
+    setTrackingInitialOrderId(orderId || '');
+    setTrackingInitialPhone(phone || '');
+    setIsTrackingOpen(true);
+  };
+
+  // Dynamic SEO management hook for all pages, collections, and products
+  useSEO({
+    route: currentRoute,
+    category: currentRoute === '/collection' ? (queryParams.category || 'all') : undefined,
+    product: selectedProduct,
+    language,
+  });
 
   // Cart & Wishlist
   const [cart, setCart] = useState<CartItem[]>(() => {
@@ -116,6 +133,28 @@ export default function App() {
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  // Deep linking for products (?product=prod-xxx)
+  useEffect(() => {
+    if (queryParams.product && products.length > 0) {
+      const found = products.find(p => p.id === queryParams.product || p.slug === queryParams.product);
+      if (found && (!selectedProduct || selectedProduct.id !== found.id)) {
+        setSelectedProduct(found);
+      }
+    } else if (!queryParams.product && selectedProduct) {
+      setSelectedProduct(null);
+    }
+  }, [queryParams.product, products]);
+
+  const handleSelectProduct = (product: Product) => {
+    setSelectedProduct(product);
+    setQueryParam('product', product.id, false);
+  };
+
+  const handleCloseProductModal = () => {
+    setSelectedProduct(null);
+    setQueryParam('product', null, true);
+  };
 
   // Protected Route Check
   useEffect(() => {
@@ -265,7 +304,7 @@ export default function App() {
           cart={cart}
           wishlist={wishlist}
           onOpenCart={() => setIsCartOpen(true)}
-          onSelectProduct={(p) => setSelectedProduct(p)}
+          onSelectProduct={handleSelectProduct}
           onToggleWishlist={handleToggleWishlist}
           onAddToCart={handleAddToCart}
           onOpenAdmin={() => setIsAdmin(true)}
@@ -296,16 +335,21 @@ export default function App() {
             cartCount={cartCount}
             wishlistCount={wishlist.length}
             onOpenCart={() => setIsCartOpen(true)}
+            onOpenTracking={() => handleOpenTracking()}
           />
           <PublicCollectionPage
             products={products}
             language={language}
             onNavigate={navigate}
-            onSelectProduct={(p) => setSelectedProduct(p)}
+            onSelectProduct={handleSelectProduct}
             wishlist={wishlist}
             onToggleWishlist={handleToggleWishlist}
+            currentCategory={queryParams.category || 'all'}
+            onCategoryChange={(catId) => {
+              setQueryParam('category', catId === 'all' ? null : catId, true);
+            }}
           />
-          <PublicFooter onNavigate={navigate} />
+          <PublicFooter onNavigate={navigate} onOpenTracking={() => handleOpenTracking()} />
         </>
       );
     }
@@ -322,9 +366,10 @@ export default function App() {
             cartCount={cartCount}
             wishlistCount={wishlist.length}
             onOpenCart={() => setIsCartOpen(true)}
+            onOpenTracking={() => handleOpenTracking()}
           />
           <PublicAboutPage onNavigate={navigate} />
-          <PublicFooter onNavigate={navigate} />
+          <PublicFooter onNavigate={navigate} onOpenTracking={() => handleOpenTracking()} />
         </>
       );
     }
@@ -341,9 +386,10 @@ export default function App() {
             cartCount={cartCount}
             wishlistCount={wishlist.length}
             onOpenCart={() => setIsCartOpen(true)}
+            onOpenTracking={() => handleOpenTracking()}
           />
           <PublicContactPage onNavigate={navigate} />
-          <PublicFooter onNavigate={navigate} />
+          <PublicFooter onNavigate={navigate} onOpenTracking={() => handleOpenTracking()} />
         </>
       );
     }
@@ -360,14 +406,16 @@ export default function App() {
           cartCount={cartCount}
           wishlistCount={wishlist.length}
           onOpenCart={() => setIsCartOpen(true)}
+          onOpenTracking={() => handleOpenTracking()}
         />
         <PublicHomePage
           products={products}
           language={language}
           onNavigate={navigate}
-          onSelectProduct={(p) => setSelectedProduct(p)}
+          onSelectProduct={handleSelectProduct}
           wishlist={wishlist}
           onToggleWishlist={handleToggleWishlist}
+          onOpenTracking={handleOpenTracking}
         />
       </>
     );
@@ -383,11 +431,19 @@ export default function App() {
         <ProductModal
           product={selectedProduct}
           language={language}
-          onClose={() => setSelectedProduct(null)}
+          onClose={handleCloseProductModal}
           onAddToCart={handleAddToCart}
           onDirectCheckout={handleDirectCheckout}
           isWishlisted={wishlist.includes(selectedProduct.id)}
           onToggleWishlist={() => handleToggleWishlist(selectedProduct)}
+          onPromptAuth={() => {
+            handleCloseProductModal();
+            setAuthPromptMessage('Veuillez vous connecter pour publier votre avis certifié.');
+            navigate('/sign-in');
+          }}
+          onReviewSubmitted={() => {
+            fetchProducts();
+          }}
         />
       )}
 
@@ -440,6 +496,8 @@ export default function App() {
         isOpen={isTrackingOpen}
         onClose={() => setIsTrackingOpen(false)}
         language={language}
+        initialOrderId={trackingInitialOrderId}
+        initialPhone={trackingInitialPhone}
       />
     </div>
   );

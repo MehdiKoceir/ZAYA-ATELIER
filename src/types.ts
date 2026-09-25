@@ -35,7 +35,23 @@ export interface Product {
   isFeatured?: boolean;
   isNew?: boolean;
   isBestSeller?: boolean;
+  rating?: number;
+  reviewCount?: number;
   variants: ProductVariant[];
+  createdAt: string;
+}
+
+export interface ProductReview {
+  id: string;
+  productId: string;
+  userId: string;
+  userName: string;
+  userWilaya?: string;
+  rating: number; // 1 to 5
+  title?: string;
+  comment: string;
+  fitFeedback?: 'true_to_size' | 'runs_small' | 'runs_large';
+  verifiedPurchase: boolean;
   createdAt: string;
 }
 

@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { X, Heart, MessageCircle, ShoppingBag, Truck, ShieldCheck, Check, Share2, AlertCircle, Lock, ZoomIn, ZoomOut } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Heart, MessageCircle, ShoppingBag, Truck, ShieldCheck, Check, Share2, AlertCircle, Lock, ZoomIn, ZoomOut, Star, Maximize2, Search } from 'lucide-react';
 import { Product, ProductVariant, Language } from '../types';
 import { formatDA, translations, buildWhatsAppLink, BOUTIQUE_PHONE } from '../lib/i18n';
 import { useAuth } from '../context/AuthContext';
+import { ProductReviews } from './ProductReviews';
 
 interface ProductModalProps {
   product: Product | null;
@@ -12,7 +13,12 @@ interface ProductModalProps {
   isWishlisted: boolean;
   onToggleWishlist: (product: Product) => void;
   onDirectCheckout: (product: Product, variant: ProductVariant, quantity: number) => void;
+  onPromptAuth?: () => void;
+  onReviewSubmitted?: () => void;
 }
+
+const LENS_SIZE = 180;
+const LENS_RADIUS = LENS_SIZE / 2;
 
 export const ProductModal: React.FC<ProductModalProps> = ({
   product,
@@ -21,7 +27,9 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   onAddToCart,
   isWishlisted,
   onToggleWishlist,
-  onDirectCheckout
+  onDirectCheckout,
+  onPromptAuth,
+  onReviewSubmitted
 }) => {
   const { user } = useAuth();
   const t = translations[language];
@@ -30,14 +38,34 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   const [selectedImage, setSelectedImage] = useState<string>(product?.images[0] || '');
   const [quantity, setQuantity] = useState<number>(1);
   const [copied, setCopied] = useState<boolean>(false);
-  const [isZoomed, setIsZoomed] = useState<boolean>(false);
-  const [zoomPos, setZoomPos] = useState<{ x: number; y: number }>({ x: 50, y: 50 });
+
+  // Smooth Magnifying Glass & Zoom States
+  const [isHovering, setIsHovering] = useState<boolean>(false);
+  const [zoomMode, setZoomMode] = useState<'lens' | 'full'>('lens');
+  const [zoomLevel, setZoomLevel] = useState<number>(2.6);
+  const [zoomPos, setZoomPos] = useState({ x: 0, y: 0, percentX: 50, percentY: 50 });
+  const [containerBounds, setContainerBounds] = useState({ width: 0, height: 0 });
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+
+  const updateZoomPosition = (clientX: number, clientY: number) => {
+    if (!imageContainerRef.current) return;
+    const rect = imageContainerRef.current.getBoundingClientRect();
+    const x = Math.max(0, Math.min(rect.width, clientX - rect.left));
+    const y = Math.max(0, Math.min(rect.height, clientY - rect.top));
+    const percentX = (x / rect.width) * 100;
+    const percentY = (y / rect.height) * 100;
+    setZoomPos({ x, y, percentX, percentY });
+    setContainerBounds({ width: rect.width, height: rect.height });
+  };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
-    const x = Math.max(0, Math.min(100, ((e.clientX - left) / width) * 100));
-    const y = Math.max(0, Math.min(100, ((e.clientY - top) / height) * 100));
-    setZoomPos({ x, y });
+    updateZoomPosition(e.clientX, e.clientY);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches[0]) {
+      updateZoomPosition(e.touches[0].clientX, e.touches[0].clientY);
+    }
   };
 
   // When product changes, reset defaults
@@ -47,7 +75,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
       setSelectedSize(product.sizes[0] || '');
       setSelectedImage(product.images[0] || '');
       setQuantity(1);
-      setIsZoomed(false);
+      setIsHovering(false);
     }
   }, [product]);
 
@@ -84,14 +112,16 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   };
 
   const handleShare = () => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const shareUrl = `${origin}/collection?product=${encodeURIComponent(product.id)}`;
     if (navigator.share) {
       navigator.share({
         title: `${product.name} | ZAYA Atelier`,
-        text: `Découvrez ${product.name} chez ZAYA Atelier Algiers`,
-        url: window.location.href,
+        text: `Découvrez ${product.name} chez ZAYA Atelier Alger (${formatDA(displayPrice, language)})`,
+        url: shareUrl,
       }).catch(() => {});
     } else {
-      navigator.clipboard.writeText(window.location.href);
+      navigator.clipboard.writeText(shareUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
@@ -106,7 +136,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 z-20 p-2 bg-[#FAF8F5]/80 hover:bg-[#1A1918] hover:text-white text-[#1A1918] rounded-full transition-colors backdrop-blur-sm"
+          className="absolute top-3 right-3 z-30 p-2 bg-[#FAF8F5]/80 hover:bg-[#1A1918] hover:text-white text-[#1A1918] rounded-full transition-colors backdrop-blur-sm"
         >
           <X className="w-5 h-5" />
         </button>
@@ -114,41 +144,145 @@ export const ProductModal: React.FC<ProductModalProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-12 gap-0">
           {/* Images Section */}
           <div className="md:col-span-6 bg-stone-100 p-4 sm:p-6 flex flex-col justify-between border-b md:border-b-0 md:border-r border-[#E8E1D5]">
+            {/* Interactive Image Container with Smooth Magnifier Glass */}
             <div
-              className="relative aspect-[3/4] overflow-hidden bg-stone-200 cursor-crosshair group select-none"
-              onMouseEnter={() => setIsZoomed(true)}
-              onMouseLeave={() => setIsZoomed(false)}
+              ref={imageContainerRef}
+              className={`relative aspect-[3/4] overflow-hidden bg-stone-200 select-none shadow-inner ${
+                zoomMode === 'lens' ? 'cursor-none' : 'cursor-crosshair'
+              }`}
+              onMouseEnter={(e) => {
+                setIsHovering(true);
+                updateZoomPosition(e.clientX, e.clientY);
+              }}
+              onMouseLeave={() => setIsHovering(false)}
               onMouseMove={handleMouseMove}
-              onClick={() => setIsZoomed(!isZoomed)}
+              onTouchStart={(e) => {
+                setIsHovering(true);
+                if (e.touches[0]) updateZoomPosition(e.touches[0].clientX, e.touches[0].clientY);
+              }}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={() => setIsHovering(false)}
             >
+              {/* Base Image */}
               <img
                 src={selectedImage}
                 alt={product.name}
                 style={{
-                  transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
-                  transform: isZoomed ? 'scale(2.2)' : 'scale(1)',
-                  transition: isZoomed ? 'transform 0.08s ease-out' : 'transform 0.3s ease-in-out'
+                  transformOrigin: `${zoomPos.percentX}% ${zoomPos.percentY}%`,
+                  transform: isHovering && zoomMode === 'full' ? `scale(${zoomLevel})` : 'scale(1)',
+                  transition: isHovering ? 'transform 0.08s ease-out' : 'transform 0.3s ease-in-out'
                 }}
-                className="w-full h-full object-cover object-center pointer-events-none"
+                className="w-full h-full object-cover object-center pointer-events-none transition-transform"
                 referrerPolicy="no-referrer"
               />
+
               {product.isNew && (
-                <span className="absolute top-3 left-3 bg-[#1A1918] text-[#FAF8F5] text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 pointer-events-none">
+                <span className="absolute top-3 left-3 z-10 bg-[#1A1918] text-[#FAF8F5] text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 pointer-events-none">
                   {t.newArrivals}
                 </span>
               )}
 
-              {/* HD Fabric Texture Loupe Indicator */}
-              <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-                <span className="bg-black/75 backdrop-blur-xs text-white text-[10px] px-2 py-1 rounded-xs flex items-center gap-1 shadow-sm">
-                  {isZoomed ? <ZoomOut className="w-3 h-3 text-[#E6C697]" /> : <ZoomIn className="w-3 h-3 text-[#E6C697]" />}
-                  {language === 'ar' ? 'فحص دقيق لتفاصيل القماش والخياطة' : 'Loupe HD • Détail & Texture réelle'}
-                </span>
-                {isZoomed && (
-                  <span className="bg-[#E6C697] text-[#1A1918] font-bold text-[10px] px-1.5 py-0.5 rounded-xs shadow-sm">
-                    2.2x
+              {/* Floating Circular Magnifying Glass Lens */}
+              {isHovering && zoomMode === 'lens' && containerBounds.width > 0 && (
+                <div
+                  className="absolute pointer-events-none rounded-full overflow-hidden border-2 border-[#C5A880] ring-4 ring-black/25 shadow-[0_16px_36px_rgba(0,0,0,0.5)] z-20"
+                  style={{
+                    width: `${LENS_SIZE}px`,
+                    height: `${LENS_SIZE}px`,
+                    left: `${zoomPos.x}px`,
+                    top: `${zoomPos.y}px`,
+                    transform: 'translate(-50%, -50%)',
+                    backgroundImage: `url(${selectedImage})`,
+                    backgroundRepeat: 'no-repeat',
+                    backgroundSize: `${containerBounds.width * zoomLevel}px ${containerBounds.height * zoomLevel}px`,
+                    backgroundPosition: `${-(zoomPos.x * zoomLevel - LENS_RADIUS)}px ${-(zoomPos.y * zoomLevel - LENS_RADIUS)}px`,
+                  }}
+                >
+                  {/* Luxury Glass Sheen Overlay */}
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-white/35 via-transparent to-black/20 pointer-events-none" />
+
+                  {/* Atelier Precision Reticle */}
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
+                    <div className="w-5 h-[1px] bg-[#C5A880]" />
+                    <div className="h-5 w-[1px] bg-[#C5A880] absolute" />
+                    <div className="w-2 h-2 rounded-full border border-[#C5A880] absolute" />
+                  </div>
+
+                  {/* Magnifier Badge */}
+                  <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-black/85 backdrop-blur-xs text-[#E6C697] text-[9px] font-mono font-bold tracking-wider rounded-full shadow-md whitespace-nowrap">
+                    {zoomLevel}x TISSU HD
+                  </div>
+                </div>
+              )}
+
+              {/* Top Banner Indicator on Hover */}
+              {isHovering && (
+                <div className="absolute top-3 right-3 z-10 pointer-events-none animate-in fade-in duration-150">
+                  <span className="bg-black/80 backdrop-blur-xs text-white text-[10px] px-2 py-1 rounded-sm flex items-center gap-1 shadow-sm font-medium">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#E6C697] animate-ping" />
+                    {language === 'ar' ? 'تكبير دقيق للأنسجة' : 'Examen Haute Définition'}
                   </span>
-                )}
+                </div>
+              )}
+
+              {/* Bottom Quick Controls & Mode Toolbar */}
+              <div className="absolute bottom-2.5 left-2.5 right-2.5 z-10 flex items-center justify-between gap-1 pointer-events-auto">
+                {/* Mode Selector */}
+                <div className="flex items-center bg-black/75 backdrop-blur-xs rounded-sm p-0.5 text-[10px] text-white shadow-sm">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setZoomMode('lens');
+                    }}
+                    className={`px-2 py-1 rounded-xs flex items-center gap-1 transition-all ${
+                      zoomMode === 'lens'
+                        ? 'bg-[#C5A880] text-[#1A1918] font-bold shadow-xs'
+                        : 'text-stone-300 hover:text-white'
+                    }`}
+                    title="Loupe circulaire de précision"
+                  >
+                    <Search className="w-3 h-3" />
+                    <span className="hidden sm:inline">Loupe</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setZoomMode('full');
+                    }}
+                    className={`px-2 py-1 rounded-xs flex items-center gap-1 transition-all ${
+                      zoomMode === 'full'
+                        ? 'bg-[#C5A880] text-[#1A1918] font-bold shadow-xs'
+                        : 'text-stone-300 hover:text-white'
+                    }`}
+                    title="Zoom plein cadre"
+                  >
+                    <Maximize2 className="w-3 h-3" />
+                    <span className="hidden sm:inline">Plein</span>
+                  </button>
+                </div>
+
+                {/* Zoom Level Stepper */}
+                <div className="flex items-center gap-1 bg-black/75 backdrop-blur-xs rounded-sm p-0.5 text-[10px] text-white shadow-sm">
+                  {[2.0, 2.6, 3.2].map((lvl) => (
+                    <button
+                      key={lvl}
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setZoomLevel(lvl);
+                      }}
+                      className={`px-1.5 py-0.5 rounded-xs font-mono font-semibold transition-all ${
+                        zoomLevel === lvl
+                          ? 'bg-[#FAF8F5] text-[#1A1918]'
+                          : 'text-stone-300 hover:text-white'
+                      }`}
+                    >
+                      {lvl}x
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -190,6 +324,29 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 <h2 className="font-serif-luxury text-xl sm:text-2xl font-bold text-[#1A1918]">
                   {language === 'ar' ? product.nameAr : product.name}
                 </h2>
+
+                {/* Rating summary */}
+                <div className="flex items-center gap-2 mt-1">
+                  <div className="flex items-center text-amber-500">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star
+                        key={s}
+                        className={`w-3.5 h-3.5 ${
+                          s <= Math.round(product.rating || 5)
+                            ? 'fill-amber-400 text-amber-500'
+                            : 'text-stone-300'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-xs font-bold text-[#1A1918]">
+                    {(product.rating || 5.0).toFixed(1)}
+                  </span>
+                  <span className="text-xs text-[#8A8073]">
+                    ({product.reviewCount ?? 0} {language === 'ar' ? 'تقييمات معتمدة' : 'avis clientes'})
+                  </span>
+                </div>
+
                 <div className="flex items-baseline gap-3 mt-1.5">
                   <span className="text-xl font-bold text-[#1A1918]">
                     {formatDA(displayPrice, language)}
@@ -404,6 +561,14 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                   <span>{copied ? 'Lien copié !' : 'Partager'}</span>
                 </button>
               </div>
+
+              {/* Verified Product Reviews Section */}
+              <ProductReviews
+                product={product}
+                language={language}
+                onPromptAuth={onPromptAuth}
+                onReviewSubmitted={onReviewSubmitted}
+              />
             </div>
           </div>
         </div>
