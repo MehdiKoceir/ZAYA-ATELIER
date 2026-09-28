@@ -601,6 +601,111 @@ app.post('/api/system/backup', requireAdmin, (req, res) => {
   }
 });
 
+// Secure Password Rotation (Customers & Admin)
+app.post('/api/auth/change-password', requireAuth, (req, res) => {
+  try {
+    const user = (req as any).user as UserRecord;
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        error: 'Veuillez renseigner votre mot de passe actuel et votre nouveau mot de passe.'
+      });
+    }
+
+    if (!verifyPassword(String(currentPassword), user.passwordHash)) {
+      return res.status(403).json({
+        success: false,
+        error: 'Le mot de passe actuel est incorrect.'
+      });
+    }
+
+    if (typeof newPassword !== 'string' || newPassword.length < 8) {
+      return res.status(400).json({
+        success: false,
+        error: 'Le nouveau mot de passe doit contenir au moins 8 caractères.'
+      });
+    }
+
+    user.passwordHash = hashPassword(newPassword);
+    saveDb();
+
+    res.json({
+      success: true,
+      message: 'Votre mot de passe a été mis à jour avec succès et chiffré via scrypt.'
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Full Database Export for Store Acquirer / Buyer (Admin Only)
+app.get('/api/system/export', requireAdmin, (req, res) => {
+  try {
+    const exportData = {
+      storeName: 'ZAYA Atelier Alger',
+      exportedAt: new Date().toISOString(),
+      schemaVersion: 1,
+      products: db.products,
+      orders: db.orders,
+      customers: db.customers,
+      discounts: db.discounts,
+      inventoryMovements: db.movements,
+      reviews: db.reviews || [],
+      wilayasCount: ALGERIAN_WILAYAS.length
+    };
+
+    res.json({ success: true, data: exportData });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Factory Reset Demo Orders for Commercial Launch (Admin Only)
+app.post('/api/system/reset-demo-data', requireAdmin, (req, res) => {
+  try {
+    const { confirmCode } = req.body;
+    if (confirmCode !== 'RESET_DEMO_DATA') {
+      return res.status(400).json({
+        success: false,
+        error: 'Code de confirmation invalide. Veuillez saisir "RESET_DEMO_DATA" pour valider la purge démo.'
+      });
+    }
+
+    // 1. Create a safe backup first
+    triggerManualBackup();
+
+    // 2. Clear demo orders and customer CRM records
+    db.orders = [];
+    orders = db.orders;
+
+    db.customers = [];
+    customers = db.customers;
+
+    db.movements = [];
+    movements = db.movements;
+
+    // 3. Reset product variant stocks to standard boutique capacity
+    for (const prod of products) {
+      for (const variant of prod.variants) {
+        variant.stock = Math.max(variant.stock, 5);
+      }
+      syncProductTotalStock(prod);
+    }
+
+    saveDb();
+
+    res.json({
+      success: true,
+      message: 'Base de données réinitialisée avec succès pour le lancement commercial. Toutes les commandes démo ont été archivées et purgées.',
+      stats: getDatabaseStats()
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 
 // Products
 app.get('/api/products', (req, res) => {
@@ -1655,7 +1760,16 @@ Réponds en format JSON structuré:
       productIds: Array.isArray(parsed.productIds) ? parsed.productIds : []
     });
   } catch (err: any) {
-    res.status(500).json({ success: false, error: err.message });
+    console.warn('[AI Stylist] Fallback triggered (quota/network):', err?.message);
+    const suggested = products.filter(p => p.stock > 0).slice(0, 3);
+    res.json({
+      success: true,
+      advice: req.body?.language === 'ar'
+        ? 'إليك بعض التنسيقات المقترحة من تشكيلتنا الراقية المتوفرة حالياً في الأتيليه.'
+        : 'Voici nos recommandations personnalisées sélectionnées parmi nos pièces actuellement disponibles en atelier.',
+      productIds: suggested.map(p => p.id),
+      fallback: true
+    });
   }
 });
 
@@ -1704,7 +1818,14 @@ Réponds en JSON:
       descriptionAr: parsed.descriptionAr || ''
     });
   } catch (err: any) {
-    res.status(500).json({ success: false, error: err.message });
+    console.warn('[AI Description] Fallback triggered (quota/network):', err?.message);
+    const { productName, material } = req.body;
+    res.json({
+      success: true,
+      descriptionFr: `${productName || 'Cette pièce d’exception'} est confectionnée avec soin dans notre atelier d’Alger. Matière noble ${material || 'de qualité supérieure'}, coupe impeccable et allure contemporaine.`,
+      descriptionAr: `قطعة استثنائية مصممة بعناية فائقة في مشغلنا بالجزائر من ${material || 'أجود الأقمشة'}. قصة انسيابية أنيقة تبرز جمال الإطلالة.`,
+      fallback: true
+    });
   }
 });
 
@@ -1749,7 +1870,15 @@ Réponds de manière concise, courtoise et très professionnelle dans la langue 
       reply: response.text?.trim() || 'Nous sommes à votre disposition.'
     });
   } catch (err: any) {
-    res.status(500).json({ success: false, error: err.message });
+    console.warn('[AI Support] Fallback triggered (quota/network):', err?.message);
+    const language = req.body?.language || 'fr';
+    res.json({
+      success: true,
+      reply: language === 'ar'
+        ? 'مرحباً بك في أتيليه زايا. التوصيل متوفر لجميع ولايات الوطن (58 ولاية) مع الدفع عند الاستلام (COD). يمكنك التواصل معنا مباشرة عبر واتساب على الرقم 0550 00 11 22 للمساعدة الفورية.'
+        : 'Bienvenue chez ZAYA Atelier. Nous livrons sur les 58 wilayas d’Algérie avec paiement à la livraison (COD) sécurisé. Pour toute assistance immédiate, notre conciergerie est joignable sur WhatsApp au 0550 00 11 22.',
+      fallback: true
+    });
   }
 });
 

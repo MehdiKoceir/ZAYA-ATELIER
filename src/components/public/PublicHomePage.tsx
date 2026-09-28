@@ -3,6 +3,7 @@ import { Product, Language } from '../../types';
 import { AppRoute } from '../../lib/router';
 import { formatDA } from '../../lib/i18n';
 import { ProductCard } from '../ProductCard';
+import { PublicFooter } from './PublicFooter';
 import { 
   ArrowRight, 
   Crown, 
@@ -378,115 +379,8 @@ export const PublicHomePage: React.FC<PublicHomePageProps> = ({
 
 
       {/* ========================================================================= */}
-      {/* 5. FOOTER: Soothing, Professional Neutral Tone */}
-      {/* ========================================================================= */}
-      <footer className="bg-[#1A1918] text-[#FAF8F5] border-t border-stone-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Brand Column */}
-            <div className="space-y-3">
-              <div className="inline-flex items-center gap-1.5">
-                <Crown className="w-4 h-4 text-[#C5A880]" />
-                <span className="font-serif-luxury text-xl font-bold tracking-[0.2em] text-white">
-                  ZAYA
-                </span>
-              </div>
-              <p className="text-xs text-stone-400 leading-relaxed">
-                Maison de haute confection algérienne contemporaine. Des créations durables et raffinées fabriquées avec noblesse et passion.
-              </p>
-              <p className="text-[11px] text-[#C5A880] font-medium pt-1">
-                Expédition sécurisée dans les 58 Wilayas (Algérie)
-              </p>
-            </div>
-
-            {/* Navigation Links */}
-            <div className="space-y-3">
-              <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-[#C5A880]">
-                Navigation
-              </h4>
-              <ul className="space-y-2 text-xs text-stone-400">
-                <li>
-                  <button onClick={() => onNavigate('/')} className="hover:text-white transition-colors">
-                    Accueil
-                  </button>
-                </li>
-                <li>
-                  <button onClick={() => onNavigate('/collection')} className="hover:text-white transition-colors">
-                    Toutes les Pièces
-                  </button>
-                </li>
-                <li>
-                  <button onClick={() => onNavigate('/about')} className="hover:text-white transition-colors">
-                    À Propos de l'Atelier
-                  </button>
-                </li>
-                <li>
-                  <button onClick={() => onNavigate('/contact')} className="hover:text-white transition-colors">
-                    Contact & Boutique
-                  </button>
-                </li>
-              </ul>
-            </div>
-
-            {/* Customer Area */}
-            <div className="space-y-3">
-              <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-[#C5A880]">
-                Espace Client
-              </h4>
-              <ul className="space-y-2 text-xs text-stone-400">
-                <li>
-                  <button onClick={() => onNavigate('/sign-in')} className="hover:text-white transition-colors">
-                    Connexion Espace Privilège
-                  </button>
-                </li>
-                <li>
-                  <button onClick={() => onNavigate('/sign-up')} className="hover:text-white transition-colors">
-                    Créer Mon Compte Client
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => onOpenTracking ? onOpenTracking() : onNavigate('/dashboard/orders')}
-                    className="hover:text-white transition-colors cursor-pointer"
-                  >
-                    Suivi de Commande Sans Connexion
-                  </button>
-                </li>
-              </ul>
-            </div>
-
-            {/* Atelier Contact */}
-            <div className="space-y-3">
-              <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-[#C5A880]">
-                Atelier & Boutique Alger
-              </h4>
-              <div className="space-y-2 text-xs text-stone-400">
-                <p className="flex items-start gap-2">
-                  <MapPin className="w-3.5 h-3.5 text-[#C5A880] shrink-0 mt-0.5" />
-                  <span>Boulevard du 11 Décembre, Val d'Hydra, Alger</span>
-                </p>
-                <p className="flex items-center gap-2">
-                  <Phone className="w-3.5 h-3.5 text-[#C5A880] shrink-0" />
-                  <span>0550 00 11 22</span>
-                </p>
-                <p className="text-[11px] text-stone-500 pt-1">
-                  Du Samedi au Jeudi : 10h00 - 19h30
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom Bar */}
-          <div className="mt-12 pt-6 border-t border-stone-800 flex flex-col sm:flex-row items-center justify-between text-[11px] text-stone-500 gap-3">
-            <p>© {new Date().getFullYear()} Maison ZAYA Atelier Alger. Tous droits réservés.</p>
-            <div className="flex items-center gap-4 text-stone-400">
-              <span>Paiement en Espèces à la Livraison</span>
-              <span>•</span>
-              <span>Livraison 58 Wilayas</span>
-            </div>
-          </div>
-        </div>
-      </footer>
+      {/* 5. FOOTER: PublicFooter with Dedicated Track My Order Quick Access */}
+      <PublicFooter onNavigate={onNavigate} onOpenTracking={onOpenTracking} />
     </div>
   );
 };

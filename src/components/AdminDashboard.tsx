@@ -3,7 +3,8 @@ import {
   Package, ShoppingCart, Users, TrendingUp, AlertTriangle, Search, Filter, Plus,
   Edit2, Trash2, CheckCircle2, Truck, RefreshCw, MessageCircle, Phone, ArrowUpRight,
   Sparkles, Tag, ChevronDown, Clock, ShieldCheck, Check, X, AlertCircle, Save,
-  Database, HardDrive, Shield, KeyRound, Download, History
+  Database, HardDrive, Shield, KeyRound, Download, History,
+  FileJson, RotateCcw, Lock
 } from 'lucide-react';
 import { Product, Order, OrderStatus, CustomerCRM, DiscountCode, StockMovement, Language, ProductVariant } from '../types';
 import { formatDA, buildWhatsAppLink, BOUTIQUE_PHONE } from '../lib/i18n';
@@ -30,6 +31,20 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ language, onExit
   const [dbStats, setDbStats] = useState<any>(null);
   const [backupLoading, setBackupLoading] = useState(false);
   const [backupMessage, setBackupMessage] = useState<string | null>(null);
+
+  // Commercial handover & sale controls state
+  const [exportLoading, setExportLoading] = useState(false);
+  const [showPasswordChange, setShowPasswordChange] = useState(false);
+  const [currPassword, setCurrPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [pwdLoading, setPwdLoading] = useState(false);
+  const [pwdMessage, setPwdMessage] = useState<string | null>(null);
+  const [pwdError, setPwdError] = useState<string | null>(null);
+
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [resetConfirmCode, setResetConfirmCode] = useState('');
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetMessage, setResetMessage] = useState<string | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [orderFilter, setOrderFilter] = useState<string>('all');
@@ -132,6 +147,84 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ language, onExit
       setBackupMessage(`Erreur réseau : ${err.message}`);
     } finally {
       setBackupLoading(false);
+    }
+  };
+
+  const handleExportData = async () => {
+    setExportLoading(true);
+    try {
+      const res = await fetch('/api/system/export', { headers: getAuthHeaders() });
+      const data = await res.json();
+      if (data.success) {
+        const blob = new Blob([JSON.stringify(data.data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `zaya-store-export-${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    } catch (err: any) {
+      alert("Erreur lors de l'exportation : " + err.message);
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPwdLoading(true);
+    setPwdError(null);
+    setPwdMessage(null);
+    try {
+      const res = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword: currPassword, newPassword })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setPwdMessage(data.message);
+        setCurrPassword('');
+        setNewPassword('');
+      } else {
+        setPwdError(data.error);
+      }
+    } catch (err: any) {
+      setPwdError(err.message);
+    } finally {
+      setPwdLoading(false);
+    }
+  };
+
+  const handleResetDemo = async () => {
+    if (resetConfirmCode !== 'RESET_DEMO_DATA') {
+      setResetMessage('Veuillez saisir exactement "RESET_DEMO_DATA" pour confirmer la purge.');
+      return;
+    }
+    setResetLoading(true);
+    setResetMessage(null);
+    try {
+      const res = await fetch('/api/system/reset-demo-data', {
+        method: 'POST',
+        headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ confirmCode: 'RESET_DEMO_DATA' })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setResetMessage(data.message);
+        setShowResetModal(false);
+        setResetConfirmCode('');
+        fetchData();
+      } else {
+        setResetMessage(data.error);
+      }
+    } catch (err: any) {
+      setResetMessage(err.message);
+    } finally {
+      setResetLoading(false);
     }
   };
 
@@ -1278,15 +1371,28 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ language, onExit
                     Chaque modification est écrite instantanément sur le disque. Une rotation automatique conserve 7 archives quotidiennes.
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleManualBackup}
-                  disabled={backupLoading}
-                  className="px-4 py-2.5 bg-[#1A1918] hover:bg-black text-[#FAF8F5] text-xs font-bold uppercase tracking-wider flex items-center gap-2 disabled:opacity-50 transition-all shadow-xs"
-                >
-                  <Download className="w-4 h-4 text-[#C5A880]" />
-                  {backupLoading ? 'Création de la sauvegarde...' : 'Créer un Snapshot Maintenant'}
-                </button>
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleExportData}
+                    disabled={exportLoading}
+                    className="px-3.5 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all border border-stone-300 rounded-2xs"
+                    title="Télécharger l'intégralité de la base de données (catalogue, commandes, clients, stocks) au format JSON"
+                  >
+                    <FileJson className="w-4 h-4 text-[#A66C44]" />
+                    {exportLoading ? 'Exportation...' : 'Exporter Données (.json)'}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleManualBackup}
+                    disabled={backupLoading}
+                    className="px-4 py-2.5 bg-[#1A1918] hover:bg-black text-[#FAF8F5] text-xs font-bold uppercase tracking-wider flex items-center gap-2 disabled:opacity-50 transition-all shadow-xs rounded-2xs"
+                  >
+                    <Download className="w-4 h-4 text-[#C5A880]" />
+                    {backupLoading ? 'Sauvegarde...' : 'Créer Snapshot'}
+                  </button>
+                </div>
               </div>
 
               {backupMessage && (
@@ -1320,6 +1426,123 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ language, onExit
                     Aucune archive secondaire générée pour le moment. Cliquez sur "Créer un Snapshot Maintenant" pour en créer une.
                   </div>
                 )}
+              </div>
+            </div>
+
+            {/* Cession Commerciale & Passation Acquéreur */}
+            <div className="bg-white p-6 border border-stone-200 shadow-2xs space-y-5">
+              <div className="border-b border-stone-200 pb-4">
+                <h3 className="font-serif-luxury font-bold text-lg text-stone-900 flex items-center gap-2">
+                  <KeyRound className="w-5 h-5 text-[#C5A880]" />
+                  Passation Commerciale & Gestion Propriétaire
+                </h3>
+                <p className="text-xs text-stone-500">
+                  Outils dédiés pour la transmission du logiciel au nouvel acquéreur : rotation de mot de passe et réinitialisation des commandes tests.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {/* 1. Change Admin Password Form */}
+                <div className="p-4 border border-stone-200 bg-stone-50/50 rounded-xs space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-stone-800 font-bold text-xs">
+                      <Lock className="w-4 h-4 text-[#A66C44]" />
+                      <span>Changer le Mot de Passe Administrateur</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowPasswordChange(!showPasswordChange)}
+                      className="text-[11px] text-[#A66C44] hover:underline font-semibold"
+                    >
+                      {showPasswordChange ? 'Fermer' : 'Modifier'}
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-stone-500">
+                    Remplacez le mot de passe initial par votre mot de passe confidentiel. Haché instantanément avec Scrypt.
+                  </p>
+
+                  {showPasswordChange && (
+                    <form onSubmit={handlePasswordChange} className="space-y-3 pt-2">
+                      <div>
+                        <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1">
+                          Mot de passe actuel
+                        </label>
+                        <input
+                          type="password"
+                          value={currPassword}
+                          onChange={e => setCurrPassword(e.target.value)}
+                          placeholder="Ex: AdminZaya2026!"
+                          required
+                          className="w-full px-3 py-2 text-xs border border-stone-300 bg-white rounded-xs focus:outline-none focus:border-[#C5A880]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider mb-1">
+                          Nouveau mot de passe (min. 8 car.)
+                        </label>
+                        <input
+                          type="password"
+                          value={newPassword}
+                          onChange={e => setNewPassword(e.target.value)}
+                          placeholder="Votre nouveau mot de passe secret"
+                          minLength={8}
+                          required
+                          className="w-full px-3 py-2 text-xs border border-stone-300 bg-white rounded-xs focus:outline-none focus:border-[#C5A880]"
+                        />
+                      </div>
+
+                      {pwdMessage && (
+                        <div className="p-2 bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] rounded flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          <span>{pwdMessage}</span>
+                        </div>
+                      )}
+                      {pwdError && (
+                        <div className="p-2 bg-rose-50 border border-rose-200 text-rose-800 text-[11px] rounded flex items-center gap-1.5">
+                          <AlertTriangle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+                          <span>{pwdError}</span>
+                        </div>
+                      )}
+
+                      <button
+                        type="submit"
+                        disabled={pwdLoading}
+                        className="w-full py-2 bg-[#1A1918] hover:bg-black text-[#FAF8F5] text-xs font-bold uppercase tracking-wider disabled:opacity-50 transition-all rounded-xs"
+                      >
+                        {pwdLoading ? 'Mise à jour...' : 'Enregistrer le Nouveau Mot de Passe'}
+                      </button>
+                    </form>
+                  )}
+                </div>
+
+                {/* 2. Reset Demo Orders for Commercial Handover */}
+                <div className="p-4 border border-rose-200 bg-rose-50/30 rounded-xs space-y-3 flex flex-col justify-between">
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-2 text-rose-900 font-bold text-xs">
+                      <RotateCcw className="w-4 h-4 text-rose-600" />
+                      <span>Purge Démo & Lancement Commercial</span>
+                    </div>
+                    <p className="text-[11px] text-stone-600 leading-relaxed">
+                      Permet à l'acquéreur de supprimer toutes les commandes et clients tests avant le lancement officiel. Le catalogue et les wilayas sont conservés, et une sauvegarde de sécurité est automatiquement créée.
+                    </p>
+                  </div>
+
+                  <div>
+                    {resetMessage && (
+                      <div className="mb-2 p-2 bg-stone-100 border border-stone-300 text-stone-800 text-[11px] rounded">
+                        {resetMessage}
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => setShowResetModal(true)}
+                      className="w-full py-2 bg-rose-700 hover:bg-rose-800 text-white text-xs font-bold uppercase tracking-wider transition-all rounded-xs shadow-2xs"
+                    >
+                      Purger les Commandes Démo (Prêt pour la Vente)
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -1835,6 +2058,73 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ language, onExit
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Reset Demo Data Modal */}
+      {showResetModal && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/75 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="relative w-full max-w-md bg-[#FAF8F5] shadow-2xl border border-rose-300 p-6 space-y-4">
+            <button
+              onClick={() => { setShowResetModal(false); setResetConfirmCode(''); }}
+              className="absolute top-4 right-4 text-stone-500 hover:text-stone-900"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="space-y-2">
+              <div className="w-10 h-10 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <h3 className="font-serif-luxury font-bold text-lg text-stone-900">
+                Purger les Commandes Démo pour la Vente
+              </h3>
+              <p className="text-xs text-stone-600 leading-relaxed">
+                Cette action va réinitialiser la liste des commandes et des clients tests pour livrer une boutique propre au nouvel acquéreur. Une archive de sauvegarde de sécurité sera automatiquement enregistrée dans <code className="font-mono bg-stone-200 px-1 py-0.5 rounded text-[10px]">data/backups/</code> avant toute modification.
+              </p>
+            </div>
+
+            <div className="p-3 bg-stone-100 border border-stone-300 text-stone-700 text-xs rounded space-y-1">
+              <span className="font-semibold text-stone-900">Conséquences de la purge :</span>
+              <ul className="list-disc pl-4 space-y-0.5 text-[11px]">
+                <li>Remise à zéro des commandes et clients démo.</li>
+                <li>Conservation intégrale du catalogue (8 créations nobles).</li>
+                <li>Conservation des 58 Wilayas et codes promo.</li>
+                <li>Compte administrateur préservé.</li>
+              </ul>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-[11px] font-semibold text-stone-700 uppercase tracking-wider">
+                Tapez <strong className="font-mono text-rose-700">RESET_DEMO_DATA</strong> pour confirmer :
+              </label>
+              <input
+                type="text"
+                value={resetConfirmCode}
+                onChange={e => setResetConfirmCode(e.target.value)}
+                placeholder="RESET_DEMO_DATA"
+                className="w-full px-3 py-2 text-xs font-mono border border-stone-300 bg-white rounded-xs focus:outline-none focus:border-rose-600"
+              />
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => { setShowResetModal(false); setResetConfirmCode(''); }}
+                className="px-4 py-2 bg-stone-200 hover:bg-stone-300 text-stone-800 text-xs font-semibold rounded-xs"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                onClick={handleResetDemo}
+                disabled={resetLoading || resetConfirmCode !== 'RESET_DEMO_DATA'}
+                className="px-4 py-2 bg-rose-700 hover:bg-rose-800 disabled:opacity-40 text-white text-xs font-bold uppercase tracking-wider rounded-xs"
+              >
+                {resetLoading ? 'Purge en cours...' : 'Confirmer la Purge Commerciale'}
+              </button>
+            </div>
           </div>
         </div>
       )}
