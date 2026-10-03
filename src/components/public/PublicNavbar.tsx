@@ -16,6 +16,7 @@ interface PublicNavbarProps {
 }
 
 export const PublicNavbar: React.FC<PublicNavbarProps> = ({
+  currentRoute,
   onNavigate,
   language,
   onLanguageChange,
@@ -86,7 +87,7 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
 
       {/* Main Public Header Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-4">
-        {/* Left Side: Brand Logo */}
+        {/* Zone 1: Brand Wordmark */}
         <div className="flex items-center gap-3 sm:gap-4">
           <div className="text-left cursor-pointer flex items-center gap-2.5" onClick={() => onNavigate('/')}>
             <div className="w-8 h-8 rounded-full bg-[#1A1918] text-[#C5A880] flex items-center justify-center shrink-0 shadow-2xs">
@@ -103,7 +104,43 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
           </div>
         </div>
 
-        {/* Actions (Right) */}
+        {/* Zone 2: Fast Clean Nav Links */}
+        <nav className="hidden md:flex items-center gap-6 text-xs uppercase tracking-[0.16em] font-medium text-stone-700">
+          <button
+            onClick={() => onNavigate('/')}
+            className={`hover:text-[#1A1918] transition-colors cursor-pointer ${
+              currentRoute === '/' ? 'text-[#1A1918] font-bold border-b-2 border-[#1A1918] pb-0.5' : ''
+            }`}
+          >
+            {language === 'ar' ? 'الموديلات' : 'Boutique'}
+          </button>
+          <button
+            onClick={() => onNavigate('/collection')}
+            className={`hover:text-[#1A1918] transition-colors cursor-pointer ${
+              currentRoute === '/collection' ? 'text-[#1A1918] font-bold border-b-2 border-[#1A1918] pb-0.5' : ''
+            }`}
+          >
+            {language === 'ar' ? 'التشكيلة' : 'Collection'}
+          </button>
+          <button
+            onClick={() => onNavigate('/about')}
+            className={`hover:text-[#1A1918] transition-colors cursor-pointer ${
+              currentRoute === '/about' ? 'text-[#1A1918] font-bold border-b-2 border-[#1A1918] pb-0.5' : ''
+            }`}
+          >
+            {language === 'ar' ? 'عن الأتيليه' : 'Maison'}
+          </button>
+          <button
+            onClick={() => onNavigate('/contact')}
+            className={`hover:text-[#1A1918] transition-colors cursor-pointer ${
+              currentRoute === '/contact' ? 'text-[#1A1918] font-bold border-b-2 border-[#1A1918] pb-0.5' : ''
+            }`}
+          >
+            {language === 'ar' ? 'اتصل بنا' : 'Contact'}
+          </button>
+        </nav>
+
+        {/* Zone 3: Actions (Right) */}
         <div className="flex items-center gap-3 sm:gap-4">
           {user ? (
             /* Logged in state -> Quick access to Customer Dashboard */

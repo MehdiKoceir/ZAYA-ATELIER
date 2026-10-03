@@ -41,7 +41,7 @@
       "material": "100% Lin Naturel Italien",
       "materialAr": "100% كتان إيطالي طبيعي",
       "sku": "ZY-SH-001",
-      "stock": 22,
+      "stock": 20,
       "isFeatured": true,
       "isNew": true,
       "isBestSeller": true,
@@ -53,7 +53,7 @@
           "color": "Noir",
           "colorHex": "#1A1A1A",
           "size": "S",
-          "stock": 2,
+          "stock": 0,
           "sku": "ZY-SH-001-BK-S"
         },
         {
@@ -779,6 +779,87 @@
   ],
   "orders": [
     {
+      "id": "DZ-2610-3475",
+      "customerName": "Sarah Benali",
+      "phone": "0550123456",
+      "wilayaCode": 16,
+      "wilayaName": "Alger",
+      "commune": "Hydra",
+      "address": "Test Address",
+      "deliveryMethod": "home",
+      "deliveryFee": 400,
+      "subtotal": 4200,
+      "discount": 0,
+      "total": 4600,
+      "status": "pending",
+      "paymentMethod": "COD",
+      "items": [
+        {
+          "productId": "prod-001",
+          "variantId": "v-001-1",
+          "productName": "Chemise Oversize en Pur Lin",
+          "color": "Noir",
+          "size": "S",
+          "quantity": 1,
+          "unitPrice": 4200,
+          "total": 4200,
+          "image": "/images/linen_oversize_shirt_1789648499860.jpg"
+        }
+      ],
+      "createdAt": "2026-10-02T09:44:16.348Z",
+      "timeline": [
+        {
+          "status": "pending",
+          "timestamp": "2026-10-02T09:44:16.348Z",
+          "note": "Commande enregistrée (Paiement en espèces à la livraison)"
+        }
+      ]
+    },
+    {
+      "id": "DZ-2609-5418",
+      "customerName": "Samira Kaci",
+      "phone": "0550112233",
+      "wilayaCode": 16,
+      "wilayaName": "Alger",
+      "commune": "Hydra",
+      "address": "Residence Les Pins, Villa 4",
+      "deliveryMethod": "home",
+      "deliveryFee": 400,
+      "subtotal": 4200,
+      "discount": 420,
+      "discountCode": "BIENVENUE10",
+      "total": 4180,
+      "status": "confirmed",
+      "paymentMethod": "COD",
+      "customerNotes": "Sonner à l interphone 4B",
+      "items": [
+        {
+          "productId": "prod-001",
+          "variantId": "v-001-1",
+          "productName": "Chemise Oversize en Pur Lin",
+          "color": "Noir",
+          "size": "S",
+          "quantity": 1,
+          "unitPrice": 4200,
+          "total": 4200,
+          "image": "/images/linen_oversize_shirt_1789648499860.jpg"
+        }
+      ],
+      "createdAt": "2026-09-30T08:36:53.354Z",
+      "timeline": [
+        {
+          "status": "pending",
+          "timestamp": "2026-09-30T08:36:53.354Z",
+          "note": "Commande enregistrée (Paiement en espèces à la livraison)"
+        },
+        {
+          "status": "confirmed",
+          "timestamp": "2026-09-30T08:36:53.447Z",
+          "note": "Appel de confirmation effectue avec succès"
+        }
+      ]
+    },
+    {
       "id": "DZ-2609-1024",
       "customerName": "Sarah Benali",
       "phone": "0550123456",
@@ -1049,14 +1130,25 @@
   ],
   "customers": [
     {
+      "id": "cust-1790757413354",
+      "name": "Samira Kaci",
+      "phone": "0550112233",
+      "wilaya": "Alger (16)",
+      "commune": "Hydra",
+      "totalOrders": 1,
+      "totalSpent": 4180,
+      "lastOrderDate": "2026-09-30",
+      "status": "new"
+    },
+    {
       "id": "cust-01",
       "name": "Sarah Benali",
       "phone": "0550123456",
       "wilaya": "Alger (16)",
       "commune": "Hydra",
-      "totalOrders": 4,
-      "totalSpent": 48500,
-      "lastOrderDate": "2026-09-10",
+      "totalOrders": 5,
+      "totalSpent": 53100,
+      "lastOrderDate": "2026-10-02",
       "status": "vip"
     },
     {
@@ -1105,6 +1197,21 @@
     }
   ],
   "users": [
+    {
+      "id": "user-13250",
+      "name": "Samira Kaci",
+      "email": "test.client.1790757413130@example.dz",
+      "phone": "0550112233",
+      "wilayaCode": 16,
+      "wilayaName": "Alger",
+      "commune": "Hydra",
+      "address": "Residence Les Pins, Villa 4",
+      "deliveryMethod": "home",
+      "role": "customer",
+      "loyaltyTier": "Membre",
+      "createdAt": "2026-09-30T08:36:53.250Z",
+      "passwordHash": "4a4feb248bb924acfc45189abcbb4db8:130ceb14533c17edad4097f27cfd9f646d569af0bfc8cd7a1bbf12df26175800268ef414621738cde2e333c5bb4d6ee5e78b606b3796724edb5e64accdd17eec"
+    },
     {
       "id": "user-admin",
       "name": "Direction ZAYA Atelier",
@@ -1159,7 +1266,7 @@
       "value": 10,
       "minOrder": 4000,
       "active": true,
-      "usedCount": 14
+      "usedCount": 15
     },
     {
       "id": "disc-02",
@@ -1181,6 +1288,30 @@
     }
   ],
   "movements": [
+    {
+      "id": "mov-1790934256348-a4gl",
+      "productId": "prod-001",
+      "variantId": "v-001-1",
+      "productName": "Chemise Oversize en Pur Lin",
+      "variantLabel": "Noir / S",
+      "change": -1,
+      "newStock": 0,
+      "reason": "order",
+      "referenceId": "DZ-2610-3475",
+      "timestamp": "2026-10-02T09:44:16.348Z"
+    },
+    {
+      "id": "mov-1790757413353-4ahj",
+      "productId": "prod-001",
+      "variantId": "v-001-1",
+      "productName": "Chemise Oversize en Pur Lin",
+      "variantLabel": "Noir / S",
+      "change": -1,
+      "newStock": 1,
+      "reason": "order",
+      "referenceId": "DZ-2609-5418",
+      "timestamp": "2026-09-30T08:36:53.354Z"
+    },
     {
       "id": "mov-01",
       "productId": "prod-002",
@@ -1285,5 +1416,5 @@
     }
   ],
   "version": 1,
-  "lastUpdated": "2026-09-23T10:02:03.560Z"
+  "lastUpdated": "2026-10-02T09:44:16.349Z"
 }
