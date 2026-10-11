@@ -110,6 +110,7 @@ export interface OrderTimelineEvent {
 
 export interface Order {
   id: string; // e.g. DZ-2609-1024
+  userId?: string; // Authenticated user ID (prevents name-collision data leaks)
   customerName: string;
   phone: string;
   alternatePhone?: string;

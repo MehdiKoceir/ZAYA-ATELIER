@@ -1,6 +1,8 @@
 import express from 'express';
 import path from 'path';
 import crypto from 'crypto';
+import compression from 'compression';
+import rateLimit from 'express-rate-limit';
 import { GoogleGenAI } from '@google/genai';
 import { INITIAL_PRODUCTS, INITIAL_DISCOUNTS } from './src/data/initialProducts';
 import { INITIAL_ORDERS, INITIAL_CUSTOMERS, INITIAL_MOVEMENTS } from './src/data/initialOrders';
@@ -11,6 +13,8 @@ import { db, initDatabase, saveDb, getDatabaseStats, triggerManualBackup, UserRe
 const app = express();
 const PORT = 3000;
 
+// Production HTTP Compression (Gzip / Brotli)
+app.use(compression());
 app.use(express.json());
 
 // Production Security Headers (Protection against MIME sniffing, Clickjacking, and XSS)
@@ -20,6 +24,39 @@ app.use((req, res, next) => {
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   next();
+});
+
+// Production Rate Limiting Policies
+const aiRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'Trop de requêtes styliste IA. Veuillez patienter quelques minutes.' }
+});
+
+const registerRateLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 15,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'Trop de tentatives de création de compte depuis cette adresse IP. Réessayez plus tard.' }
+});
+
+const discountValidationLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 25,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'Trop de tentatives de validation de code promo. Veuillez patienter.' }
+});
+
+const orderPlacementLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'Limite de commandes atteinte pour cette heure. Veuillez contacter l atelier au 0550 00 11 22.' }
 });
 
 // Cryptographic Password Hashing (scrypt with per-user random salt)
@@ -115,7 +152,6 @@ let reviews: ProductReview[] = db.reviews || [];
 function hasUserPurchasedProduct(user: UserRecord, productId: string): boolean {
   if (!user || !productId) return false;
   const cleanUserPhone = (user.phone || '').replace(/[\s\-\.\(\)]/g, '');
-  const cleanUserName = (user.name || '').trim().toLowerCase();
 
   return orders.some(order => {
     const hasItem = Array.isArray(order.items) && order.items.some(item => item.productId === productId);
@@ -123,10 +159,10 @@ function hasUserPurchasedProduct(user: UserRecord, productId: string): boolean {
 
     const cleanOrderPhone = (order.phone || '').replace(/[\s\-\.\(\)]/g, '');
     const matchesPhone = cleanUserPhone.length >= 6 && cleanOrderPhone.length >= 6 && cleanUserPhone === cleanOrderPhone;
-    const matchesName = cleanUserName.length > 2 && (order.customerName || '').trim().toLowerCase() === cleanUserName;
+    const matchesUserId = !!(order.userId && order.userId === user.id);
     const isValidStatus = order.status !== 'cancelled';
 
-    return (matchesPhone || matchesName) && isValidStatus;
+    return (matchesUserId || matchesPhone) && isValidStatus;
   });
 }
 
@@ -137,14 +173,38 @@ interface SessionRecord {
   expiresAt: number;
 }
 const activeSessions = new Map<string, SessionRecord>();
+const revokedTokens = new Set<string>();
 const SESSION_TTL_MS = 14 * 24 * 60 * 60 * 1000; // 14 days session lifetime
+const AUTH_SECRET = process.env.AUTH_SECRET || '_zaya_atelier_secret_2026';
+
+// Cryptographic token signing: provides stateless verification that survives server restarts
+function signSessionToken(userId: string, createdAt: number): string {
+  const payload = `${userId}.${createdAt}`;
+  const sig = crypto.createHmac('sha256', AUTH_SECRET).update(payload).digest('hex');
+  return `zy_${payload}.${sig}`;
+}
+
+function verifySessionSignature(token: string): { userId: string; createdAt: number } | null {
+  if (!token.startsWith('zy_')) return null;
+  const raw = token.slice(3);
+  const parts = raw.split('.');
+  if (parts.length !== 3) return null;
+  const [userId, createdAtStr, sig] = parts;
+  const createdAt = Number(createdAtStr);
+  if (isNaN(createdAt) || Date.now() - createdAt > SESSION_TTL_MS) return null;
+  const expectedSig = crypto.createHmac('sha256', AUTH_SECRET).update(`${userId}.${createdAt}`).digest('hex');
+  if (sig.length !== expectedSig.length) return null;
+  if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expectedSig))) return null;
+  return { userId, createdAt };
+}
 
 function createSession(userId: string): string {
-  const token = `zy_${crypto.randomBytes(32).toString('hex')}`;
+  const createdAt = Date.now();
+  const token = signSessionToken(userId, createdAt);
   activeSessions.set(token, {
     userId,
-    createdAt: Date.now(),
-    expiresAt: Date.now() + SESSION_TTL_MS
+    createdAt,
+    expiresAt: createdAt + SESSION_TTL_MS
   });
   return token;
 }
@@ -187,7 +247,7 @@ function clearLoginAttempts(ip: string) {
   loginAttempts.delete(ip);
 }
 
-// Helper: Extract session user from request headers
+// Helper: Extract session user from request headers (survives restarts via cryptographic verification)
 function getRequestUser(req: express.Request): UserRecord | null {
   const authHeader = req.headers.authorization;
   const token = authHeader?.startsWith('Bearer ')
@@ -195,8 +255,20 @@ function getRequestUser(req: express.Request): UserRecord | null {
     : ((req.query.token || req.headers['x-auth-token']) as string);
 
   if (!token) return null;
-  const session = activeSessions.get(token);
-  if (!session) return null;
+  if (revokedTokens.has(token)) return null;
+
+  let session = activeSessions.get(token);
+  if (!session) {
+    // If not in active memory (e.g. after server restart), verify cryptographic signature
+    const verified = verifySessionSignature(token);
+    if (!verified) return null;
+    session = {
+      userId: verified.userId,
+      createdAt: verified.createdAt,
+      expiresAt: verified.createdAt + SESSION_TTL_MS
+    };
+    activeSessions.set(token, session);
+  }
 
   if (Date.now() > session.expiresAt) {
     activeSessions.delete(token);
@@ -241,7 +313,8 @@ function requireAdmin(req: express.Request, res: express.Response, next: express
 function getSanitizedUser(user: UserRecord): UserAccount {
   const cleanPhone = user.phone.replace(/\s+/g, '');
   const userOrders = orders.filter(
-    o => o.phone.replace(/\s+/g, '') === cleanPhone || o.customerName.toLowerCase() === user.name.toLowerCase()
+    o => (o.userId && o.userId === user.id) ||
+         (cleanPhone && o.phone.replace(/\s+/g, '') === cleanPhone)
   );
   const totalSpent = userOrders.filter(o => o.status !== 'cancelled').reduce((sum, o) => sum + o.total, 0);
   const ordersCount = userOrders.length;
@@ -303,8 +376,8 @@ app.get('/api/health', (req, res) => {
 // AUTHENTICATION & CLIENT ACCOUNT API
 // ==========================================
 
-// Register new customer account
-app.post('/api/auth/register', (req, res) => {
+// Register new customer account (Protected by Rate Limiter)
+app.post('/api/auth/register', registerRateLimiter, (req, res) => {
   try {
     const { name, email, phone, password, wilayaCode, commune, address, deliveryMethod } = req.body;
 
@@ -325,10 +398,10 @@ app.post('/api/auth/register', (req, res) => {
       });
     }
 
-    if (!password || password.length < 6) {
+    if (!password || password.length < 8) {
       return res.status(400).json({
         success: false,
-        error: 'Le mot de passe doit contenir au moins 6 caractères'
+        error: 'Le mot de passe doit contenir au moins 8 caractères pour sécuriser votre compte'
       });
     }
 
@@ -467,33 +540,18 @@ app.post('/api/auth/login', (req, res) => {
 });
 
 // Get current logged-in user profile & live orders
-app.get('/api/auth/me', (req, res) => {
+const handleGetMe = (req: express.Request, res: express.Response) => {
   try {
-    const authHeader = req.headers.authorization;
-    const token = authHeader?.startsWith('Bearer ')
-      ? authHeader.substring(7)
-      : (req.query.token as string);
-
-    if (!token) {
-      return res.status(401).json({ success: false, error: 'Non authentifié' });
-    }
-
-    const session = activeSessions.get(token);
-    if (!session || Date.now() > session.expiresAt) {
-      if (session) activeSessions.delete(token);
-      return res.status(401).json({ success: false, error: 'Session expirée ou invalide' });
-    }
-
-    const user = users.find(u => u.id === session.userId);
+    const user = getRequestUser(req);
     if (!user) {
-      activeSessions.delete(token);
-      return res.status(404).json({ success: false, error: 'Utilisateur introuvable' });
+      return res.status(401).json({ success: false, error: 'Session expirée ou non authentifiée' });
     }
 
     const sanitized = getSanitizedUser(user);
+    const cleanUserPhone = user.phone.replace(/\s+/g, '');
     const userOrders = orders.filter(
-      o => o.phone.replace(/\s+/g, '') === user.phone.replace(/\s+/g, '') ||
-           o.customerName.toLowerCase() === user.name.toLowerCase()
+      o => (o.userId && o.userId === user.id) ||
+           (cleanUserPhone && o.phone.replace(/\s+/g, '') === cleanUserPhone)
     );
 
     res.json({
@@ -504,17 +562,21 @@ app.get('/api/auth/me', (req, res) => {
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message });
   }
-});
+};
+
+app.get('/api/auth/me', handleGetMe);
+app.get('/api/auth/profile', handleGetMe);
 
 // Logout session
 app.post('/api/auth/logout', (req, res) => {
   const authHeader = req.headers.authorization;
   const token = authHeader?.startsWith('Bearer ')
-    ? authHeader.substring(7)
+    ? authHeader.substring(7).trim()
     : (req.body?.token as string);
 
   if (token) {
     activeSessions.delete(token);
+    revokedTokens.add(token);
   }
   res.json({ success: true, message: 'Déconnexion réussie' });
 });
@@ -522,23 +584,9 @@ app.post('/api/auth/logout', (req, res) => {
 // Update Customer Profile & Coordinates
 app.put('/api/auth/profile', (req, res) => {
   try {
-    const authHeader = req.headers.authorization;
-    const token = authHeader?.startsWith('Bearer ')
-      ? authHeader.substring(7)
-      : (req.body?.token as string);
-
-    if (!token) {
-      return res.status(401).json({ success: false, error: 'Non authentifié' });
-    }
-
-    const session = activeSessions.get(token);
-    if (!session || Date.now() > session.expiresAt) {
-      return res.status(401).json({ success: false, error: 'Session expirée' });
-    }
-
-    const user = users.find(u => u.id === session.userId);
+    const user = getRequestUser(req);
     if (!user) {
-      return res.status(404).json({ success: false, error: 'Utilisateur introuvable' });
+      return res.status(401).json({ success: false, error: 'Session non valide ou expirée' });
     }
 
     const { name, phone, wilayaCode, commune, address, deliveryMethod, deliveryNotes } = req.body;
@@ -901,8 +949,9 @@ app.post('/api/products/:id/reviews', requireAuth, (req, res) => {
 app.post('/api/products', requireAdmin, (req, res) => {
   try {
     const data = req.body;
-    if (!data.name || !data.price || !Array.isArray(data.variants) || data.variants.length === 0) {
-      return res.status(400).json({ success: false, error: 'Nom, prix et variantes requis' });
+    const priceNum = Number(data.price);
+    if (!data.name || isNaN(priceNum) || priceNum <= 0 || !Array.isArray(data.variants) || data.variants.length === 0) {
+      return res.status(400).json({ success: false, error: 'Nom, prix strictement positif et variantes requis' });
     }
 
     const newId = `prod-${Date.now().toString().slice(-4)}`;
@@ -1079,19 +1128,20 @@ app.get('/api/inventory/movements', requireAdmin, (req, res) => {
   res.json({ success: true, movements: movements.slice(0, 50) });
 });
 
-// Validate discount coupon
-app.post('/api/discounts/validate', (req, res) => {
+// Validate discount coupon (Protected by Rate Limiter against dictionary attacks)
+app.post('/api/discounts/validate', discountValidationLimiter, (req, res) => {
   const { code, subtotal } = req.body;
   if (!code) {
     return res.status(400).json({ success: false, error: 'Code promo requis' });
   }
 
+  const numericSubtotal = Math.max(0, Number(subtotal) || 0);
   const discount = discounts.find(d => d.code.toUpperCase() === String(code).trim().toUpperCase() && d.active);
   if (!discount) {
     return res.status(404).json({ success: false, error: 'Code promo introuvable ou inactif' });
   }
 
-  if (subtotal < discount.minOrder) {
+  if (numericSubtotal < discount.minOrder) {
     return res.status(400).json({
       success: false,
       error: `Commande minimum de ${discount.minOrder.toLocaleString()} DA requise pour ce code`
@@ -1100,11 +1150,11 @@ app.post('/api/discounts/validate', (req, res) => {
 
   let discountAmount = 0;
   if (discount.type === 'percentage') {
-    discountAmount = Math.round((subtotal * discount.value) / 100);
+    discountAmount = Math.round((numericSubtotal * discount.value) / 100);
   } else {
     discountAmount = discount.value;
   }
-  discountAmount = Math.min(discountAmount, subtotal);
+  discountAmount = Math.min(discountAmount, numericSubtotal);
 
   res.json({
     success: true,
@@ -1155,7 +1205,7 @@ app.get('/api/wilayas', (req, res) => {
 
 // Order Placement (Cash on Delivery - COD)
 // CRITICAL: Strict server-side recalculation of prices, stock verification, and inventory deduction
-app.post('/api/orders', (req, res) => {
+app.post('/api/orders', orderPlacementLimiter, (req, res) => {
   try {
     // Require authenticated session to place order
     const sessionUser = getRequestUser(req);
@@ -1301,6 +1351,7 @@ app.post('/api/orders', (req, res) => {
     // 6. Create Order Record
     const newOrder: Order = {
       id: orderId,
+      userId: sessionUser.id,
       customerName: String(customerName).trim(),
       phone: String(phone).trim(),
       alternatePhone: alternatePhone ? String(alternatePhone).trim() : undefined,
@@ -1460,33 +1511,16 @@ app.get('/api/orders/:id', (req, res) => {
   }
 
   const isPhoneVerified = !!(queryPhone && (queryPhone === cleanOrderPhone || cleanOrderPhone.endsWith(queryPhone) || queryPhone.endsWith(cleanOrderPhone)));
-  const isOwner = user && (
-    normalizeAlgerianPhone(user.phone) === cleanOrderPhone ||
-    user.name.trim().toLowerCase() === order.customerName.trim().toLowerCase()
-  );
+  const isOwner = !!(user && (
+    (order.userId && order.userId === user.id) ||
+    normalizeAlgerianPhone(user.phone) === cleanOrderPhone
+  ));
 
-  // If public lookup without verified ownership or matching phone, mask sensitive customer PII for privacy protection
+  // If public lookup without verified ownership or matching phone, require phone validation (Law 18-07 privacy)
   if (!isAdmin && !isOwner && !isPhoneVerified) {
-    const rawPhone = order.phone.replace(/\s+/g, '');
-    const maskedPhone = rawPhone.length >= 6
-      ? rawPhone.substring(0, 4) + '****' + rawPhone.slice(-2)
-      : '****';
-    const nameParts = order.customerName.trim().split(' ');
-    const maskedName = nameParts.length > 1
-      ? `${nameParts[0]} ${nameParts[1].charAt(0)}.`
-      : nameParts[0];
-    const maskedAddress = order.commune ? `${order.commune}, ${order.wilayaName}` : order.wilayaName;
-
-    return res.json({
-      success: true,
-      order: {
-        ...order,
-        customerName: maskedName,
-        phone: maskedPhone,
-        address: maskedAddress,
-        notes: undefined,
-        internalNotes: undefined
-      }
+    return res.status(403).json({
+      success: false,
+      error: 'Veuillez renseigner le numéro de téléphone associé à la commande pour afficher son statut.'
     });
   }
 
@@ -1525,10 +1559,11 @@ app.get('/api/orders', (req, res) => {
     return res.json({ success: true, orders: result });
   }
 
-  // Customer: only their own orders
+  // Customer: only their own orders (strict tenant isolation by verified userId or phone)
   const cleanUserPhone = user.phone.replace(/\s+/g, '');
   const myOrders = orders.filter(
-    o => o.phone.replace(/\s+/g, '') === cleanUserPhone || o.customerName.toLowerCase() === user.name.toLowerCase()
+    o => (o.userId && o.userId === user.id) ||
+         (cleanUserPhone && o.phone.replace(/\s+/g, '') === cleanUserPhone)
   );
   return res.json({ success: true, orders: myOrders });
 });
@@ -1697,8 +1732,8 @@ app.get('/api/analytics', requireAdmin, (req, res) => {
 // GEMINI AI ENDPOINTS (Server-Side)
 // ==========================================
 
-// 1. AI Fashion Stylist & Outfit Finder (grounded in actual stock)
-app.post('/api/ai/stylist', async (req, res) => {
+// 1. AI Fashion Stylist & Outfit Finder (Protected by Rate Limiter)
+app.post('/api/ai/stylist', aiRateLimiter, async (req, res) => {
   try {
     const { query, language = 'fr' } = req.body;
     if (!query) {
@@ -1773,8 +1808,8 @@ Réponds en format JSON structuré:
   }
 });
 
-// 2. AI Product Description Generator (for Boutique Owner)
-app.post('/api/ai/generate-description', async (req, res) => {
+// 2. AI Product Description Generator (for Boutique Owner - Admin Protected)
+app.post('/api/ai/generate-description', requireAdmin, async (req, res) => {
   try {
     const { productName, material, category, tone = 'luxe' } = req.body;
     if (!productName) {
@@ -1829,8 +1864,8 @@ Réponds en JSON:
   }
 });
 
-// 3. AI Customer Support Assistant (Algerian e-commerce context)
-app.post('/api/ai/support', async (req, res) => {
+// 3. AI Customer Support Assistant (Algerian e-commerce context - Protected by Rate Limiter)
+app.post('/api/ai/support', aiRateLimiter, async (req, res) => {
   try {
     const { message, language = 'fr' } = req.body;
     if (!message) {

@@ -41,7 +41,7 @@
       "material": "100% Lin Naturel Italien",
       "materialAr": "100% كتان إيطالي طبيعي",
       "sku": "ZY-SH-001",
-      "stock": 20,
+      "stock": 16,
       "isFeatured": true,
       "isNew": true,
       "isBestSeller": true,
@@ -62,7 +62,7 @@
           "color": "Noir",
           "colorHex": "#1A1A1A",
           "size": "M",
-          "stock": 4,
+          "stock": 0,
           "sku": "ZY-SH-001-BK-M"
         },
         {
@@ -779,6 +779,156 @@
   ],
   "orders": [
     {
+      "id": "DZ-2610-8222",
+      "userId": "user-30994",
+      "customerName": "Sarah IdenticalName",
+      "phone": "0551560717",
+      "wilayaCode": 16,
+      "wilayaName": "Alger",
+      "commune": "Hydra",
+      "address": "Hydra Villa 1",
+      "deliveryMethod": "home",
+      "deliveryFee": 400,
+      "subtotal": 4200,
+      "discount": 0,
+      "total": 4600,
+      "status": "pending",
+      "paymentMethod": "COD",
+      "items": [
+        {
+          "productId": "prod-001",
+          "variantId": "v-001-2",
+          "productName": "Chemise Oversize en Pur Lin",
+          "color": "Noir",
+          "size": "M",
+          "quantity": 1,
+          "unitPrice": 4200,
+          "total": 4200,
+          "image": "/images/linen_oversize_shirt_1789648499860.jpg"
+        }
+      ],
+      "createdAt": "2026-10-07T08:33:51.131Z",
+      "timeline": [
+        {
+          "status": "pending",
+          "timestamp": "2026-10-07T08:33:51.131Z",
+          "note": "Commande enregistrée (Paiement en espèces à la livraison)"
+        }
+      ]
+    },
+    {
+      "id": "DZ-2610-8932",
+      "userId": "user-53343",
+      "customerName": "Sarah IdenticalName",
+      "phone": "0551463222",
+      "wilayaCode": 16,
+      "wilayaName": "Alger",
+      "commune": "Hydra",
+      "address": "Hydra Villa 1",
+      "deliveryMethod": "home",
+      "deliveryFee": 400,
+      "subtotal": 4200,
+      "discount": 0,
+      "total": 4600,
+      "status": "pending",
+      "paymentMethod": "COD",
+      "items": [
+        {
+          "productId": "prod-001",
+          "variantId": "v-001-2",
+          "productName": "Chemise Oversize en Pur Lin",
+          "color": "Noir",
+          "size": "M",
+          "quantity": 1,
+          "unitPrice": 4200,
+          "total": 4200,
+          "image": "/images/linen_oversize_shirt_1789648499860.jpg"
+        }
+      ],
+      "createdAt": "2026-10-07T08:32:33.515Z",
+      "timeline": [
+        {
+          "status": "pending",
+          "timestamp": "2026-10-07T08:32:33.515Z",
+          "note": "Commande enregistrée (Paiement en espèces à la livraison)"
+        }
+      ]
+    },
+    {
+      "id": "DZ-2610-1677",
+      "customerName": "Yasmine Bouzid",
+      "phone": "0550197877",
+      "wilayaCode": 16,
+      "wilayaName": "Alger",
+      "commune": "Hydra",
+      "address": "Val d Hydra, Villa 8",
+      "deliveryMethod": "home",
+      "deliveryFee": 400,
+      "subtotal": 4200,
+      "discount": 0,
+      "total": 4600,
+      "status": "pending",
+      "paymentMethod": "COD",
+      "items": [
+        {
+          "productId": "prod-001",
+          "variantId": "v-001-2",
+          "productName": "Chemise Oversize en Pur Lin",
+          "color": "Noir",
+          "size": "M",
+          "quantity": 1,
+          "unitPrice": 4200,
+          "total": 4200,
+          "image": "/images/linen_oversize_shirt_1789648499860.jpg"
+        }
+      ],
+      "createdAt": "2026-10-06T07:51:33.492Z",
+      "timeline": [
+        {
+          "status": "pending",
+          "timestamp": "2026-10-06T07:51:33.492Z",
+          "note": "Commande enregistrée (Paiement en espèces à la livraison)"
+        }
+      ]
+    },
+    {
+      "id": "DZ-2610-3348",
+      "customerName": "Leila Mansouri",
+      "phone": "0550509206",
+      "wilayaCode": 31,
+      "wilayaName": "Oran",
+      "commune": "Bir El Djir",
+      "address": "Residence Akid Lotfi",
+      "deliveryMethod": "home",
+      "deliveryFee": 650,
+      "subtotal": 4200,
+      "discount": 0,
+      "total": 4850,
+      "status": "pending",
+      "paymentMethod": "COD",
+      "items": [
+        {
+          "productId": "prod-001",
+          "variantId": "v-001-2",
+          "productName": "Chemise Oversize en Pur Lin",
+          "color": "Noir",
+          "size": "M",
+          "quantity": 1,
+          "unitPrice": 4200,
+          "total": 4200,
+          "image": "/images/linen_oversize_shirt_1789648499860.jpg"
+        }
+      ],
+      "createdAt": "2026-10-06T07:51:14.908Z",
+      "timeline": [
+        {
+          "status": "pending",
+          "timestamp": "2026-10-06T07:51:14.908Z",
+          "note": "Commande enregistrée (Paiement en espèces à la livraison)"
+        }
+      ]
+    },
+    {
       "id": "DZ-2610-3475",
       "customerName": "Sarah Benali",
       "phone": "0550123456",
@@ -1130,6 +1280,50 @@
   ],
   "customers": [
     {
+      "id": "cust-1791362031131",
+      "name": "Sarah IdenticalName",
+      "phone": "0551560717",
+      "wilaya": "Alger (16)",
+      "commune": "Hydra",
+      "totalOrders": 1,
+      "totalSpent": 4600,
+      "lastOrderDate": "2026-10-07",
+      "status": "new"
+    },
+    {
+      "id": "cust-1791361953515",
+      "name": "Sarah IdenticalName",
+      "phone": "0551463222",
+      "wilaya": "Alger (16)",
+      "commune": "Hydra",
+      "totalOrders": 1,
+      "totalSpent": 4600,
+      "lastOrderDate": "2026-10-07",
+      "status": "new"
+    },
+    {
+      "id": "cust-1791273093492",
+      "name": "Yasmine Bouzid",
+      "phone": "0550197877",
+      "wilaya": "Alger (16)",
+      "commune": "Hydra",
+      "totalOrders": 1,
+      "totalSpent": 4600,
+      "lastOrderDate": "2026-10-06",
+      "status": "new"
+    },
+    {
+      "id": "cust-1791273074908",
+      "name": "Leila Mansouri",
+      "phone": "0550509206",
+      "wilaya": "Oran (31)",
+      "commune": "Bir El Djir",
+      "totalOrders": 1,
+      "totalSpent": 4850,
+      "lastOrderDate": "2026-10-06",
+      "status": "new"
+    },
+    {
       "id": "cust-1790757413354",
       "name": "Samira Kaci",
       "phone": "0550112233",
@@ -1197,6 +1391,141 @@
     }
   ],
   "users": [
+    {
+      "id": "user-31068",
+      "name": "Sarah IdenticalName",
+      "email": "sarah.second.1791362031063@zaya.dz",
+      "phone": "0552793353",
+      "wilayaCode": 31,
+      "wilayaName": "Oran",
+      "commune": "Oran",
+      "address": "Oran Villa 2",
+      "deliveryMethod": "home",
+      "role": "customer",
+      "loyaltyTier": "Membre",
+      "createdAt": "2026-10-07T08:33:51.068Z",
+      "passwordHash": "a829eca0d30d993e2e8fc318cd98ae99:b2c658ac0e70cfd7f3ae88ffec4394f680703064a5e895bdc87eaac0592d2a3b3ac5daca9e4fef207d1121dc617107b92aec4f9da3550897e22611df78a50dd6"
+    },
+    {
+      "id": "user-30994",
+      "name": "Sarah IdenticalName",
+      "email": "sarah.first.1791362030876@zaya.dz",
+      "phone": "0551560717",
+      "wilayaCode": 16,
+      "wilayaName": "Alger",
+      "commune": "Hydra",
+      "address": "Hydra Villa 1",
+      "deliveryMethod": "home",
+      "role": "customer",
+      "loyaltyTier": "Membre",
+      "createdAt": "2026-10-07T08:33:50.994Z",
+      "passwordHash": "ad0f91f6bd40b6e74f64a356fba0b1c6:008a2bb4dd7d0d3b85cdd400ac5e4c46e1bddc7911fd804d86645da04419fbcccc4763b02235b56ede633c423d9a3fb52fec6988c6573b5536a70e711b11b3f2"
+    },
+    {
+      "id": "user-53432",
+      "name": "Sarah IdenticalName",
+      "email": "sarah.second.1791361953426@zaya.dz",
+      "phone": "0552512872",
+      "wilayaCode": 31,
+      "wilayaName": "Oran",
+      "commune": "Oran",
+      "address": "Oran Villa 2",
+      "deliveryMethod": "home",
+      "role": "customer",
+      "loyaltyTier": "Membre",
+      "createdAt": "2026-10-07T08:32:33.432Z",
+      "passwordHash": "6fd1aec12d00cfb448db2d6af6b44643:7ae1c0f0a3b32d7a19a80773ad60e50cfacda8e941924f953de23cb6622f51ff586b3119e4bfb42a9f2650297c882e526246f7a2683498bdd8b0bb6b1558191f"
+    },
+    {
+      "id": "user-53343",
+      "name": "Sarah IdenticalName",
+      "email": "sarah.first.1791361953170@zaya.dz",
+      "phone": "0551463222",
+      "wilayaCode": 16,
+      "wilayaName": "Alger",
+      "commune": "Hydra",
+      "address": "Hydra Villa 1",
+      "deliveryMethod": "home",
+      "role": "customer",
+      "loyaltyTier": "Membre",
+      "createdAt": "2026-10-07T08:32:33.343Z",
+      "passwordHash": "9131e9a00b72a24ee4952ec0cd301041:7b6f15b6f3d0918bf7fea45d4ca3954b1244cdb853ba7631633fd92b123c0cf481f017e2526034f222ec35abf2d94dc775313a5f746e348a2de8803dc03aca95"
+    },
+    {
+      "id": "user-93414",
+      "name": "Yasmine Bouzid",
+      "email": "client_1791273093336@zaya.dz",
+      "phone": "0550197877",
+      "wilayaCode": 16,
+      "wilayaName": "Alger",
+      "commune": "Hydra",
+      "address": "Val d Hydra, Villa 8",
+      "deliveryMethod": "home",
+      "role": "customer",
+      "loyaltyTier": "Membre",
+      "createdAt": "2026-10-06T07:51:33.414Z",
+      "passwordHash": "dea8f0cb4ed9ea305940f79fcf2906d2:1ef66de2d78e7dc310dae21f6fda1ce78b805a7ec9dad66bfc1f07436eaa2c355886c97094075895dc83d481c86c425ccb2d885bd644138d9f4a7b192d6bf8be"
+    },
+    {
+      "id": "user-74855",
+      "name": "Leila Mansouri",
+      "email": "client_1791273074847@zaya.dz",
+      "phone": "0550509206",
+      "wilayaCode": 31,
+      "wilayaName": "Oran",
+      "commune": "Bir El Djir",
+      "address": "Residence Akid Lotfi",
+      "deliveryMethod": "home",
+      "role": "customer",
+      "loyaltyTier": "Membre",
+      "createdAt": "2026-10-06T07:51:14.855Z",
+      "passwordHash": "350d762bc5622509625ba50968935c14:66cb18964caecad610326fc8c7dea91b531671dd8cdaeeab5434f97a3bdc05dd17641edb6b4f0ea679c89b9d1219276e34220dfb29592c813b9a767460049aa5"
+    },
+    {
+      "id": "user-58615",
+      "name": "Leila Mansouri",
+      "email": "client_1791273058609@zaya.dz",
+      "phone": "0550189627",
+      "wilayaCode": 31,
+      "wilayaName": "Oran",
+      "commune": "Bir El Djir",
+      "address": "Residence Akid Lotfi",
+      "deliveryMethod": "home",
+      "role": "customer",
+      "loyaltyTier": "Membre",
+      "createdAt": "2026-10-06T07:50:58.615Z",
+      "passwordHash": "5baeaa0b3ae35f31cced19c21987d501:197c3404be8bab59cdcdd07e64a871b398edba86f105ea6562beef47653b55a34b683283de13d2b47d72248945ab883ded6b4ae23a934f49e528726fe2c06cd4"
+    },
+    {
+      "id": "user-50222",
+      "name": "Leila Mansouri",
+      "email": "client_1791273050214@zaya.dz",
+      "phone": "0550155877",
+      "wilayaCode": 31,
+      "wilayaName": "Oran",
+      "commune": "Bir El Djir",
+      "address": "Residence Akid Lotfi",
+      "deliveryMethod": "home",
+      "role": "customer",
+      "loyaltyTier": "Membre",
+      "createdAt": "2026-10-06T07:50:50.222Z",
+      "passwordHash": "cca9e4f210c3421d7ecb9b8d509f453a:b454c5c17502135ab2ea1055843dece2a55570a60e6948c1eab6c508d362083b4a3db8b1fa4568ba2ddc3c188b098f2df92dfe2ae885bf983c6df03a2c2e6c5c"
+    },
+    {
+      "id": "user-14393",
+      "name": "Leila Mansouri",
+      "email": "client_1791273014372@zaya.dz",
+      "phone": "0550998877",
+      "wilayaCode": 31,
+      "wilayaName": "Oran",
+      "commune": "Bir El Djir",
+      "address": "Residence Akid Lotfi, Batiment C",
+      "deliveryMethod": "home",
+      "role": "customer",
+      "loyaltyTier": "Membre",
+      "createdAt": "2026-10-06T07:50:14.393Z",
+      "passwordHash": "2ca45cfaa055506b4043a73190b57b53:98ba9d7d6858097b9326e5a5b608907f18272ac028d9f0f315c55b3c5939db3f012d16fc517851bcd4da74c72a95955a1439b7d99165951e8120e9db1e9ccbd1"
+    },
     {
       "id": "user-13250",
       "name": "Samira Kaci",
@@ -1288,6 +1617,54 @@
     }
   ],
   "movements": [
+    {
+      "id": "mov-1791362031131-jf24",
+      "productId": "prod-001",
+      "variantId": "v-001-2",
+      "productName": "Chemise Oversize en Pur Lin",
+      "variantLabel": "Noir / M",
+      "change": -1,
+      "newStock": 0,
+      "reason": "order",
+      "referenceId": "DZ-2610-8222",
+      "timestamp": "2026-10-07T08:33:51.131Z"
+    },
+    {
+      "id": "mov-1791361953515-z8jb",
+      "productId": "prod-001",
+      "variantId": "v-001-2",
+      "productName": "Chemise Oversize en Pur Lin",
+      "variantLabel": "Noir / M",
+      "change": -1,
+      "newStock": 1,
+      "reason": "order",
+      "referenceId": "DZ-2610-8932",
+      "timestamp": "2026-10-07T08:32:33.515Z"
+    },
+    {
+      "id": "mov-1791273093492-iiwf",
+      "productId": "prod-001",
+      "variantId": "v-001-2",
+      "productName": "Chemise Oversize en Pur Lin",
+      "variantLabel": "Noir / M",
+      "change": -1,
+      "newStock": 2,
+      "reason": "order",
+      "referenceId": "DZ-2610-1677",
+      "timestamp": "2026-10-06T07:51:33.492Z"
+    },
+    {
+      "id": "mov-1791273074908-qzk4",
+      "productId": "prod-001",
+      "variantId": "v-001-2",
+      "productName": "Chemise Oversize en Pur Lin",
+      "variantLabel": "Noir / M",
+      "change": -1,
+      "newStock": 3,
+      "reason": "order",
+      "referenceId": "DZ-2610-3348",
+      "timestamp": "2026-10-06T07:51:14.908Z"
+    },
     {
       "id": "mov-1790934256348-a4gl",
       "productId": "prod-001",
@@ -1416,5 +1793,5 @@
     }
   ],
   "version": 1,
-  "lastUpdated": "2026-10-02T09:44:16.349Z"
+  "lastUpdated": "2026-10-07T08:33:51.131Z"
 }

@@ -110,19 +110,25 @@ function rotateBackups() {
   }
 }
 
-// Save database with atomic rename guarantee
+// Save database with atomic rename guarantee and collision-proof temporary filename
 export function saveDb(): boolean {
+  let tmpPath: string | null = null;
   try {
     ensureDirs();
     db.lastUpdated = new Date().toISOString();
     const jsonStr = JSON.stringify(db, null, 2);
-    // Write to temporary file first
-    fs.writeFileSync(DB_TMP_FILE, jsonStr, 'utf8');
-    // Atomically rename over original file
-    fs.renameSync(DB_TMP_FILE, DB_FILE);
+    // Write to a unique temporary file first (collision-proof even under high concurrency)
+    const uniqueId = `${process.pid}-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+    tmpPath = path.join(DATA_DIR, `db-${uniqueId}.tmp`);
+    fs.writeFileSync(tmpPath, jsonStr, 'utf8');
+    // Atomically rename over original file (POSIX atomic operation)
+    fs.renameSync(tmpPath, DB_FILE);
     return true;
   } catch (err) {
     console.error('Failed to save database to disk:', err);
+    if (tmpPath && fs.existsSync(tmpPath)) {
+      try { fs.unlinkSync(tmpPath); } catch {}
+    }
     return false;
   }
 }

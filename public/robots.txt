@@ -1,0 +1,13 @@
+# Robots.txt for ZAYA Atelier
+User-agent: *
+Allow: /
+Allow: /collection
+Allow: /about
+Allow: /contact
+
+# Disallow indexing private customer dashboards and administrative back-office
+Disallow: /dashboard
+Disallow: /dashboard/*
+Disallow: /api/*
+
+Sitemap: https://zaya-atelier.dz/sitemap.xml
